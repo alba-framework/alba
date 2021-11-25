@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'active_page.dart';
-import 'listener.dart';
 import 'restoration.dart';
 import 'route_definition.dart';
 import 'router_error.dart';
@@ -11,6 +11,11 @@ import 'router_error.dart';
 /// It maintains the state of the router, like routes, active pages,
 /// and so on...
 class RouterState {
+  /// The pages index.
+  ///
+  /// Use [_nextPageIndex] for getting the next index.
+  int _pageIndex = 0;
+
   /// The definition of routes.
   final List<RouteDefinition> routeDefinitions;
 
@@ -20,13 +25,8 @@ class RouterState {
   /// The not found page.
   late final RouteDefinition _notFoundRoute;
 
-  /// The page listeners.
-  final List<PageListenerDefinition> _pageListeners = [];
-
-  /// The pages index.
-  ///
-  /// Use [_nextPageIndex] for getting the next index.
-  int _pageIndex = 0;
+  /// A stream controller for route events.
+  final _routerEventsController = BehaviorSubject<RouterEvent>();
 
   /// Creates [RouterState]
   RouterState({
@@ -53,6 +53,14 @@ class RouterState {
     return _pageIndex;
   }
 
+  /// The event stream.
+  ValueStream<RouterEvent> get eventStream => _routerEventsController.stream;
+
+  /// Frees memory, closes streams, and so on...
+  void clean() {
+    _routerEventsController.close();
+  }
+
   /// Push new page by path.
   ///
   /// [id] is used to match listeners.
@@ -61,6 +69,9 @@ class RouterState {
     var activePage = ActivePage(routeDefinition, path, _nextPageIndex, id: id);
 
     activePages.add(activePage);
+
+    WidgetsBinding.instance
+        ?.addPostFrameCallback((_) => _notifyPush(activePage));
   }
 
   /// Pop a route.
@@ -99,26 +110,14 @@ class RouterState {
     return routeDefinition;
   }
 
-  /// Adds a page listener
-  void addPageListener(PageListenerDefinition pageListener) {
-    _pageListeners.add(pageListener);
+  /// Notify a push event.
+  void _notifyPush(ActivePage activePage) {
+    _routerEventsController.sink.add(PushEvent(activePage));
   }
 
-  /// Removes a page listener
-  void removePageListener(PageListenerDefinition pageListener) {
-    _pageListeners.remove(pageListener);
-  }
-
-  /// Notify a pop event to matched listeners.
-  void _notifyPop(
-    ActivePage activePage,
-    dynamic result,
-  ) {
-    for (var pageListener in _pageListeners) {
-      if (pageListener.isMatch(activePage)) {
-        pageListener.notifyPop(activePage, result);
-      }
-    }
+  /// Notify a pop event.
+  void _notifyPop(ActivePage activePage, dynamic result) {
+    _routerEventsController.sink.add(PopEvent(activePage, result));
   }
 
   /// Restore pages.
@@ -136,4 +135,29 @@ class RouterState {
 
     _pageIndex = activePages.last.index + 1;
   }
+}
+
+/// A router event.
+class RouterEvent {
+  /// Target page.
+  final ActivePage activePage;
+
+  /// Creates a [RouterEvent].
+  RouterEvent(this.activePage);
+}
+
+/// A router pop event.
+class PopEvent extends RouterEvent {
+  /// The page result.
+  final dynamic result;
+
+  /// Creates a [PopEvent].
+  PopEvent(ActivePage activePage, this.result) : super(activePage);
+}
+
+/// A router push event.
+class PushEvent extends RouterEvent {
+
+  /// Creates a [PushEvent].
+  PushEvent(ActivePage activePage) : super(activePage);
 }
