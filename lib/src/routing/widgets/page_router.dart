@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart' show MaterialPage, DialogRoute;
 import 'package:flutter/widgets.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../active_page.dart';
-import '../listener.dart';
 import '../restoration.dart';
 import '../router_error.dart';
 import '../router_state.dart';
@@ -135,22 +135,15 @@ class PageRouterState extends State<PageRouter> with RestorationMixin {
     );
   }
 
-  /// Adds new page
+  /// Adds new page.
   void push(String path, {String? id}) {
     widget._routerState.push(path, id);
     _syncRestorablePages();
     widget._notifyDelegate();
   }
 
-  /// Adds a page listener
-  void addListener<T>(PageListenerDefinition<T> pageListener) {
-    widget._routerState.addPageListener(pageListener);
-  }
-
-  /// Removes a page listener
-  void removeListener<T>(PageListenerDefinition<T> pageListener) {
-    widget._routerState.removePageListener(pageListener);
-  }
+  /// Router event stream.
+  ValueStream<RouterEvent> get eventStream => widget._routerState.eventStream;
 }
 
 class _DialogPage<T> extends Page<T> {

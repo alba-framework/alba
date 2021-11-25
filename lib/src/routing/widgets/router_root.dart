@@ -74,6 +74,12 @@ class _RouterRootState extends State<RouterRoot> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _routerState.clean();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return RootRestorationScope(
       restorationId: widget.restorationScopeId,
