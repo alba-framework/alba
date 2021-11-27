@@ -65,7 +65,7 @@ class RouteDefinition {
   }
 
   /// Extracts the parameters for a path.
-  Map<String, String> parameters(String path) {
+  Map<String, String> _parameters(String path) {
     final match = _pathRegex.matchAsPrefix(_addTrailingSlash(path));
 
     if (null == match) {
@@ -165,7 +165,7 @@ class ActiveRoute {
   String get name => '$key+$path';
 
   /// Extracts the parameters for the current path.
-  Map<String, String> get parameters => _definition.parameters(path);
+  Map<String, String> get parameters => _definition._parameters(path);
 
   /// Build the widget.
   Widget buildWidget(BuildContext context, Map<String, String> parameters) =>
