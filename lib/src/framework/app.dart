@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../routing.dart';
-import '../core/error.dart';
+import 'error.dart';
 
 /// A service locator.
 ///
@@ -46,6 +46,13 @@ App createApp({
   );
 
   return _instance!;
+}
+
+/// Clears the app.
+///
+/// It is useful for testing.
+void clearApp() {
+  _instance = null;
 }
 
 /// An Application.
@@ -137,10 +144,14 @@ class App {
       );
     }
 
-    return RootRestorationScope(
-      restorationId: restorationScopeId,
-      child: child,
-    );
+    if (null != restorationScopeId) {
+      child = RootRestorationScope(
+        restorationId: restorationScopeId,
+        child: child,
+      );
+    }
+
+    return child;
   }
 
   /// Saves router's delegate and information parser instances.
