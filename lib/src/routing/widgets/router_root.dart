@@ -1,14 +1,14 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart' hide Router;
 
 import '../route.dart';
-import '../router_state.dart';
-import 'page_router.dart';
+import '../router.dart';
+import 'router.dart';
 
 /// A signature for a function that creates the root.
 typedef _RouterRootWidgetBuilder = Widget Function(
   BuildContext context,
-  PageRouterDelegate pageRouterDelegate,
-  PageRouteInformationParser pageRouteInformationParser,
+  AlbaRouterDelegate pageRouterDelegate,
+  AlbaRouteInformationParser pageRouteInformationParser,
 );
 
 /// A router root configuration.
@@ -54,23 +54,23 @@ class RouterRoot extends StatefulWidget {
 }
 
 class _RouterRootState extends State<RouterRoot> {
-  late final PageRouteInformationParser _pageRouteInformationParser;
+  late final AlbaRouteInformationParser _pageRouteInformationParser;
 
-  late final RouterState _routerState;
+  late final AlbaRouter _routerState;
 
-  late final PageRouterDelegate _pageRouterDelegate;
+  late final AlbaRouterDelegate _pageRouterDelegate;
 
   @override
   void initState() {
     super.initState();
 
-    _pageRouteInformationParser = PageRouteInformationParser();
-    _routerState = RouterState(
+    _pageRouteInformationParser = AlbaRouteInformationParser();
+    _routerState = AlbaRouter(
       routeDefinitions: widget.configuration.routeDefinitions,
       initialPath: widget.configuration.initialPath,
       notFoundPath: widget.configuration.notFoundPath,
     );
-    _pageRouterDelegate = PageRouterDelegate(
+    _pageRouterDelegate = AlbaRouterDelegate(
       routerState: _routerState,
       navigatorKey: widget.configuration.navigatorKey,
     );
@@ -93,15 +93,15 @@ class _RouterRootState extends State<RouterRoot> {
 }
 
 /// A router delegate for the app.
-class PageRouterDelegate extends RouterDelegate<String>
+class AlbaRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
-  final RouterState _routerState;
+  final AlbaRouter _routerState;
 
   final GlobalKey<NavigatorState>? _navigatorKey;
 
-  /// Creates a [PageRouterDelegate]
-  PageRouterDelegate({
-    required RouterState routerState,
+  /// Creates a [AlbaRouterDelegate]
+  AlbaRouterDelegate({
+    required AlbaRouter routerState,
     required GlobalKey<NavigatorState>? navigatorKey,
   })  : _routerState = routerState,
         _navigatorKey = navigatorKey;
@@ -110,9 +110,7 @@ class PageRouterDelegate extends RouterDelegate<String>
   GlobalKey<NavigatorState>? get navigatorKey => _navigatorKey;
 
   @override
-  String get currentConfiguration {
-    return _routerState.currentPath();
-  }
+  String get currentConfiguration => _routerState.currentPath;
 
   @override
   Future<void> setInitialRoutePath(String configuration) async {
@@ -132,7 +130,7 @@ class PageRouterDelegate extends RouterDelegate<String>
 
   @override
   Widget build(BuildContext context) {
-    return PageRouter(
+    return Router(
       navigatorKey: navigatorKey,
       routerState: _routerState,
       notifyDelegate: () => notifyListeners(),
@@ -141,7 +139,7 @@ class PageRouterDelegate extends RouterDelegate<String>
 }
 
 /// A router information parser for the app.
-class PageRouteInformationParser extends RouteInformationParser<String> {
+class AlbaRouteInformationParser extends RouteInformationParser<String> {
   @override
   Future<String> parseRouteInformation(
     RouteInformation routeInformation,

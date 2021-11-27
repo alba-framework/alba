@@ -80,10 +80,10 @@ class App {
   final RouterRootConfiguration? routerRootConfiguration;
 
   /// The root router delegate.
-  PageRouterDelegate? _pageRouterDelegate;
+  AlbaRouterDelegate? _pageRouterDelegate;
 
   /// The root router information parser.
-  PageRouteInformationParser? _pageRouteInformationParser;
+  AlbaRouteInformationParser? _pageRouteInformationParser;
 
   /// Creates an [App].
   App._({
@@ -103,10 +103,10 @@ class App {
       routerRootConfiguration!.navigatorKey!.currentState!.context;
 
   /// The root router delegate.
-  PageRouterDelegate? get pageRouterDelegate => _pageRouterDelegate;
+  AlbaRouterDelegate? get pageRouterDelegate => _pageRouterDelegate;
 
   /// The root router information parser.
-  PageRouteInformationParser? get pageRouteInformationParser =>
+  AlbaRouteInformationParser? get pageRouteInformationParser =>
       _pageRouteInformationParser;
 
   /// Runs the app.
@@ -131,8 +131,8 @@ class App {
         configuration: routerRootConfiguration!,
         builder: (
           BuildContext context,
-          PageRouterDelegate pageRouterDelegate,
-          PageRouteInformationParser pageRouteInformationParser,
+          AlbaRouterDelegate pageRouterDelegate,
+          AlbaRouteInformationParser pageRouteInformationParser,
         ) {
           _routerInitialized(
             pageRouterDelegate,
@@ -156,8 +156,8 @@ class App {
 
   /// Saves router's delegate and information parser instances.
   void _routerInitialized(
-    PageRouterDelegate pageRouterDelegate,
-    PageRouteInformationParser? pageRouteInformationParser,
+    AlbaRouterDelegate pageRouterDelegate,
+    AlbaRouteInformationParser? pageRouteInformationParser,
   ) {
     _pageRouterDelegate = pageRouterDelegate;
     _pageRouteInformationParser = pageRouteInformationParser;

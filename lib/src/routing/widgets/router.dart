@@ -3,24 +3,24 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../framework/error.dart';
 import '../restoration.dart';
-import '../router_state.dart';
+import '../router.dart';
 
 /// A widget that manages routes and pages though the [Navigator].
 ///
-/// [PageRouter.of] operates on the nearest ancestor [PageRouter] from the
+/// [Router.of] operates on the nearest ancestor [Router] from the
 /// given [BuildContext]. Be sure to provide a [BuildContext] below the
-/// intended [PageRouter].
-class PageRouter extends StatefulWidget {
-  final RouterState _routerState;
+/// intended [Router].
+class Router extends StatefulWidget {
+  final AlbaRouter _routerState;
 
   final void Function() _notifyDelegate;
 
   /// The key used for [Navigator].
   final GlobalKey<NavigatorState>? _navigatorKey;
 
-  /// Creates a [PageRouter].
-  const PageRouter({
-    required RouterState routerState,
+  /// Creates a [Router].
+  const Router({
+    required AlbaRouter routerState,
     required void Function() notifyDelegate,
     GlobalKey<NavigatorState>? navigatorKey,
     Key? key,
@@ -30,7 +30,7 @@ class PageRouter extends StatefulWidget {
         super(key: key);
 
   @override
-  PageRouterState createState() => PageRouterState();
+  RouterState createState() => RouterState();
 
   /// The state from the closest instance of this class that encloses the given
   /// context.
@@ -38,15 +38,15 @@ class PageRouter extends StatefulWidget {
   /// Typical usage is as follows:
   ///
   /// ```dart
-  /// PageRouter.of(context).push('/my/path');
+  /// Router.of(context).push('/my/path');
   /// ```
   ///
-  /// If there is no [PageRouter] in the give `context`, this function will
+  /// If there is no [Router] in the give `context`, this function will
   /// throw a [RouterError] in debug mode, and an exception in release mode.
   ///
   /// This method can be expensive (it walks the element tree).
-  static PageRouterState of(BuildContext context) {
-    var _routerState = context.findRootAncestorStateOfType<PageRouterState>();
+  static RouterState of(BuildContext context) {
+    var _routerState = context.findRootAncestorStateOfType<RouterState>();
 
     assert(() {
       if (_routerState == null) {
@@ -60,10 +60,10 @@ class PageRouter extends StatefulWidget {
   }
 }
 
-/// The state for a [PageRouter] widget.
+/// The state for a [Router] widget.
 ///
-/// A reference to this class can be obtained by calling [PageRouter.of].
-class PageRouterState extends State<PageRouter> with RestorationMixin {
+/// A reference to this class can be obtained by calling [Router.of].
+class RouterState extends State<Router> with RestorationMixin {
   final RestorablePageInformationList _restorablePages =
       RestorablePageInformationList();
 
