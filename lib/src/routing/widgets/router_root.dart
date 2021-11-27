@@ -7,24 +7,14 @@ import 'page_router.dart';
 /// A signature for a function that creates the root.
 typedef _RouterRootWidgetBuilder = Widget Function(
   BuildContext context,
-  String? restorationScopeId,
-  _PageRouterDelegate pageRouterDelegate,
-  _PageRouteInformationParser pageRouteInformationParser,
+  PageRouterDelegate pageRouterDelegate,
+  PageRouteInformationParser pageRouteInformationParser,
 );
 
-/// A root router widget.
-class RouterRoot extends StatefulWidget {
+/// A router root configuration.
+class RouterRootConfiguration {
   /// The definition of routes.
   final List<RouteDefinition> routeDefinitions;
-
-  /// The router root builder
-  final _RouterRootWidgetBuilder builder;
-
-  /// The identifier to use for state restoration of this app.
-  ///
-  /// Providing a restoration ID inserts a [RootRestorationScope] into the
-  /// widget hierarchy, which enables state restoration for descendant widgets.
-  final String? restorationScopeId;
 
   /// The key used for [Navigator].
   final GlobalKey<NavigatorState>? navigatorKey;
@@ -35,14 +25,27 @@ class RouterRoot extends StatefulWidget {
   /// The not found path.
   final String notFoundPath;
 
-  /// Creates a [RouterRoot].
-  const RouterRoot({
+  /// Creates a [RouterRootConfiguration].
+  RouterRootConfiguration({
     required this.routeDefinitions,
-    required this.builder,
-    required this.navigatorKey,
-    this.restorationScopeId,
     this.initialPath = '/',
     this.notFoundPath = '/not-found',
+    GlobalKey<NavigatorState>? navigatorKey,
+  }) : navigatorKey = navigatorKey ?? GlobalKey<NavigatorState>();
+}
+
+/// A root router widget.
+class RouterRoot extends StatefulWidget {
+  /// The router configuration.
+  final RouterRootConfiguration configuration;
+
+  /// The router root builder.
+  final _RouterRootWidgetBuilder builder;
+
+  /// Creates a [RouterRoot].
+  const RouterRoot({
+    required this.configuration,
+    required this.builder,
     Key? key,
   }) : super(key: key);
 
@@ -51,25 +54,25 @@ class RouterRoot extends StatefulWidget {
 }
 
 class _RouterRootState extends State<RouterRoot> {
-  late final _PageRouteInformationParser _pageRouteInformationParser;
+  late final PageRouteInformationParser _pageRouteInformationParser;
 
   late final RouterState _routerState;
 
-  late final _PageRouterDelegate _pageRouterDelegate;
+  late final PageRouterDelegate _pageRouterDelegate;
 
   @override
   void initState() {
     super.initState();
 
-    _pageRouteInformationParser = _PageRouteInformationParser();
+    _pageRouteInformationParser = PageRouteInformationParser();
     _routerState = RouterState(
-      routeDefinitions: widget.routeDefinitions,
-      initialPath: widget.initialPath,
-      notFoundPath: widget.notFoundPath,
+      routeDefinitions: widget.configuration.routeDefinitions,
+      initialPath: widget.configuration.initialPath,
+      notFoundPath: widget.configuration.notFoundPath,
     );
-    _pageRouterDelegate = _PageRouterDelegate(
+    _pageRouterDelegate = PageRouterDelegate(
       routerState: _routerState,
-      navigatorKey: widget.navigatorKey,
+      navigatorKey: widget.configuration.navigatorKey,
     );
   }
 
@@ -81,27 +84,23 @@ class _RouterRootState extends State<RouterRoot> {
 
   @override
   Widget build(BuildContext context) {
-    return RootRestorationScope(
-      restorationId: widget.restorationScopeId,
-      child: widget.builder(
-        context,
-        '${widget.restorationScopeId}_app',
-        _pageRouterDelegate,
-        _pageRouteInformationParser,
-      ),
+    return widget.builder(
+      context,
+      _pageRouterDelegate,
+      _pageRouteInformationParser,
     );
   }
 }
 
 /// A router delegate for the app.
-class _PageRouterDelegate extends RouterDelegate<String>
+class PageRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
   final RouterState _routerState;
 
   final GlobalKey<NavigatorState>? _navigatorKey;
 
-  /// Creates a [_PageRouterDelegate]
-  _PageRouterDelegate({
+  /// Creates a [PageRouterDelegate]
+  PageRouterDelegate({
     required RouterState routerState,
     required GlobalKey<NavigatorState>? navigatorKey,
   })  : _routerState = routerState,
@@ -142,7 +141,7 @@ class _PageRouterDelegate extends RouterDelegate<String>
 }
 
 /// A router information parser for the app.
-class _PageRouteInformationParser extends RouteInformationParser<String> {
+class PageRouteInformationParser extends RouteInformationParser<String> {
   @override
   Future<String> parseRouteInformation(
     RouteInformation routeInformation,

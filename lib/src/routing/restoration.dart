@@ -12,9 +12,9 @@ class RestorablePageInformationList
   }
 
   @override
-  List<RestorablePageInformation> fromPrimitives(Object? serialized) {
+  List<RestorablePageInformation> fromPrimitives(Object? data) {
     return List<RestorablePageInformation>.from(
-      (serialized as List).map(
+      (data as List).map(
         (primitive) => RestorablePageInformation.fromPrimitives(
           List<String?>.from(primitive as List),
         ),
@@ -48,13 +48,13 @@ class RestorablePageInformation {
   });
 
   /// Restore information from primitive types.
-  factory RestorablePageInformation.fromPrimitives(Object? serialized) {
-    var data = List<String?>.from(serialized as List);
+  factory RestorablePageInformation.fromPrimitives(Object? data) {
+    var list = List<String?>.from(data as List);
 
     return RestorablePageInformation(
-      path: data[0]!,
-      index: int.parse(data[1]!),
-      id: data[2],
+      path: list[0]!,
+      index: int.parse(list[1]!),
+      id: list[2],
     );
   }
 
