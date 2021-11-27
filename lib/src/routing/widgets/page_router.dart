@@ -87,7 +87,7 @@ class PageRouterState extends State<PageRouter> with RestorationMixin {
       restorationScopeId: 'navigator',
       key: widget._navigatorKey,
       pages: [
-        for (var activePage in widget._routerState.activePages)
+        for (var activePage in widget._routerState.activeRoutes)
           activePage.buildPage(context)
       ],
       onPopPage: (route, result) {
@@ -105,7 +105,7 @@ class PageRouterState extends State<PageRouter> with RestorationMixin {
   }
 
   void _syncRestorablePages() {
-    _restorablePages.value = widget._routerState.activePages
+    _restorablePages.value = widget._routerState.activeRoutes
         .map((activePage) =>
             RestorablePageInformation.fromActivePage(activePage))
         .toList();

@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../framework/error.dart';
-import 'active_page.dart';
 import 'restoration.dart';
 import 'route.dart';
 
@@ -19,8 +18,8 @@ class RouterState {
   /// The definition of routes.
   final List<RouteDefinition> routeDefinitions;
 
-  /// The list of active pages.
-  List<ActivePage> activePages = [];
+  /// The list of active routes.
+  List<ActiveRoute> activeRoutes = [];
 
   /// The not found page.
   late final RouteDefinition _notFoundRoute;
@@ -34,8 +33,8 @@ class RouterState {
     String notFoundPath = '/404',
     String initialPath = '/',
   }) {
-    activePages = [
-      ActivePage(
+    activeRoutes = [
+      ActiveRoute(
         _findRouteDefinition(initialPath),
         initialPath,
         _nextPageIndex,
@@ -66,21 +65,21 @@ class RouterState {
   /// [id] is used to match listeners.
   void push(String path, String? id) {
     var routeDefinition = _findRouteDefinition(path);
-    var activePage = ActivePage(routeDefinition, path, _nextPageIndex, id: id);
+    var activeRoute = ActiveRoute(routeDefinition, path, _nextPageIndex, id: id);
 
-    activePages.add(activePage);
+    activeRoutes.add(activeRoute);
 
     WidgetsBinding.instance
-        ?.addPostFrameCallback((_) => _notifyPush(activePage));
+        ?.addPostFrameCallback((_) => _notifyPush(activeRoute));
   }
 
   /// Pop a route.
   void pop(Route route, dynamic result) {
-    for (var i = activePages.length - 1; i >= 0; i--) {
-      var activePage = activePages[i];
+    for (var i = activeRoutes.length - 1; i >= 0; i--) {
+      var activePage = activeRoutes[i];
 
       if (activePage.name == route.settings.name) {
-        activePages.removeAt(i);
+        activeRoutes.removeAt(i);
 
         WidgetsBinding.instance
             ?.addPostFrameCallback((_) => _notifyPop(activePage, result));
@@ -92,7 +91,7 @@ class RouterState {
 
   /// Get the current path.
   String currentPath() {
-    return activePages.last.currentPath;
+    return activeRoutes.last.path;
   }
 
   RouteDefinition _findRouteDefinition(String path, {bool isNotFound = false}) {
@@ -111,20 +110,20 @@ class RouterState {
   }
 
   /// Notify a push event.
-  void _notifyPush(ActivePage activePage) {
-    _routerEventsController.sink.add(PushEvent(activePage));
+  void _notifyPush(ActiveRoute activeRoute) {
+    _routerEventsController.sink.add(PushEvent(activeRoute));
   }
 
   /// Notify a pop event.
-  void _notifyPop(ActivePage activePage, dynamic result) {
-    _routerEventsController.sink.add(PopEvent(activePage, result));
+  void _notifyPop(ActiveRoute activeRoute, dynamic result) {
+    _routerEventsController.sink.add(PopEvent(activeRoute, result));
   }
 
   /// Restore pages.
   void restorePages(RestorablePageInformationList restorablePages) {
-    activePages = restorablePages.value
+    activeRoutes = restorablePages.value
         .map(
-          (restorablePageInformation) => ActivePage(
+          (restorablePageInformation) => ActiveRoute(
             _findRouteDefinition(restorablePageInformation.path),
             restorablePageInformation.path,
             restorablePageInformation.index,
@@ -133,17 +132,17 @@ class RouterState {
         )
         .toList();
 
-    _pageIndex = activePages.last.index + 1;
+    _pageIndex = activeRoutes.last.index + 1;
   }
 }
 
 /// A router event.
 class RouterEvent {
   /// Target page.
-  final ActivePage activePage;
+  final ActiveRoute activeRoute;
 
   /// Creates a [RouterEvent].
-  RouterEvent(this.activePage);
+  RouterEvent(this.activeRoute);
 }
 
 /// A router pop event.
@@ -152,11 +151,11 @@ class PopEvent extends RouterEvent {
   final dynamic result;
 
   /// Creates a [PopEvent].
-  PopEvent(ActivePage activePage, this.result) : super(activePage);
+  PopEvent(ActiveRoute activeRoute, this.result) : super(activeRoute);
 }
 
 /// A router push event.
 class PushEvent extends RouterEvent {
   /// Creates a [PushEvent].
-  PushEvent(ActivePage activePage) : super(activePage);
+  PushEvent(ActiveRoute activeRoute) : super(activeRoute);
 }

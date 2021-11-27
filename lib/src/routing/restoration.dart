@@ -52,11 +52,11 @@ class RestorablePageInformation {
   });
 
   /// Restore information from primitive types.
-  factory RestorablePageInformation.fromActivePage(ActivePage activePage) =>
+  factory RestorablePageInformation.fromActivePage(ActiveRoute activeRoute) =>
       RestorablePageInformation(
-        path: activePage.currentPath,
-        index: activePage.index,
-        id: activePage.id,
+        path: activeRoute.path,
+        index: activeRoute.index,
+        id: activeRoute.id,
       );
 
   /// Restore information from primitive types.
