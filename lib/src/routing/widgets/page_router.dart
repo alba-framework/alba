@@ -2,7 +2,7 @@ import 'package:flutter/material.dart' show MaterialPage, DialogRoute;
 import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../core/error.dart';
+import '../../framework/error.dart';
 import '../active_page.dart';
 import '../restoration.dart';
 import '../router_state.dart';
