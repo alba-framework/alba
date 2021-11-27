@@ -13,14 +13,14 @@ typedef RouteWidgetBuilder = Widget Function(
 /// A signature for a function that creates a router [Page].
 typedef RouterPageBuilder = Page Function(
   BuildContext context,
-  ActivePage activePage,
+  ActiveRoute activeRoute,
 );
 
 /// A route definition for [PageRouter].
 @immutable
 class RouteDefinition {
   /// The path.
-  final String path;
+  final String _path;
 
   /// The builder.
   final RouteWidgetBuilder widgetBuilder;
@@ -38,13 +38,13 @@ class RouteDefinition {
   ///
   /// For a dialog, [isDialog] must be true to work properly.
   RouteDefinition(
-    this.path,
+    String path,
     this.widgetBuilder, {
     this.pageBuilder = defaultPageBuilder,
-  }) {
+  }) : _path = path {
     _parametersNames = [];
     _pathRegex = pathToRegExp(
-      path,
+      _path,
       parameters: _parametersNames,
       caseSensitive: false,
     );
@@ -73,23 +73,23 @@ class RouteDefinition {
 /// in another case it build a [MaterialPage].
 Page defaultPageBuilder(
   BuildContext context,
-  ActivePage activePage,
+  ActiveRoute activeRoute,
 ) {
-  Widget widget = activePage.buildWidget(context, activePage.parameters);
+  Widget widget = activeRoute.buildWidget(context, activeRoute.parameters);
 
   if (widget is RouteDialogBehavior) {
     return DialogPage(
-      key: ValueKey(activePage.key),
-      restorationId: activePage.restorationId,
-      name: activePage.name,
+      key: ValueKey(activeRoute.key),
+      restorationId: activeRoute.restorationId,
+      name: activeRoute.name,
       child: widget,
     );
   }
 
   return MaterialPage(
-    key: ValueKey(activePage.key),
-    restorationId: activePage.restorationId,
-    name: activePage.name,
+    key: ValueKey(activeRoute.key),
+    restorationId: activeRoute.restorationId,
+    name: activeRoute.name,
     child: widget,
   );
 }
@@ -125,3 +125,44 @@ class DialogPage<T> extends Page<T> {
 
 /// A route that should behave like a dialog.
 abstract class RouteDialogBehavior {}
+
+/// An information about an active route.
+@immutable
+class ActiveRoute {
+  /// The route definition.
+  final RouteDefinition _definition;
+
+  /// The current page path.
+  final String path;
+
+  /// The page index
+  final int index;
+
+  /// The developer-defined id.
+  final String? id;
+
+  /// Creates an [ActiveRoute].
+  const ActiveRoute(RouteDefinition routeDefinition, this.path, this.index,
+      {this.id})
+      : _definition = routeDefinition;
+
+  /// The page restoration id.
+  String get key => 'pi+$index';
+
+  /// The page restoration id.
+  String get restorationId => key;
+
+  /// The page name.
+  String get name => '$key+$path';
+
+  /// Extracts the parameters for the current path.
+  Map<String, String> get parameters => _definition.parameters(path);
+
+  /// Build the widget.
+  Widget buildWidget(BuildContext context, Map<String, String> parameters) =>
+      _definition.widgetBuilder(context, parameters);
+
+  /// Build the page.
+  Page buildPage(BuildContext context) =>
+      _definition.pageBuilder(context, this);
+}

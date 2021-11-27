@@ -2,17 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 
-import '../active_page.dart';
+import '../../../routing.dart';
 import '../router_state.dart';
 import 'page_router.dart';
 
 /// A push event callback.
-typedef PushEventCallback = void Function(ActivePage activePage);
+typedef PushEventCallback = void Function(ActiveRoute activeRoute);
 
 /// A pop event callback.
 ///
 /// The type argument `T` is the page's result type.
-typedef PopEventCallback<T> = void Function(ActivePage activePage, T? result);
+typedef PopEventCallback<T> = void Function(ActiveRoute activeRoute, T? result);
 
 /// A listener for router events.
 ///
@@ -40,7 +40,7 @@ abstract class PageListener<T> extends StatefulWidget {
   _PageListenerState<T> createState() => _PageListenerState<T>();
 
   /// Test if the page matches.
-  bool isMatch(ActivePage pageInfo);
+  bool isMatch(ActiveRoute activeRoute);
 }
 
 class _PageListenerState<T> extends State<PageListener<T>> {
@@ -63,14 +63,14 @@ class _PageListenerState<T> extends State<PageListener<T>> {
   }
 
   void _notifyEvent(RouterEvent event) {
-    if (!widget.isMatch(event.activePage)) {
+    if (!widget.isMatch(event.activeRoute)) {
       return;
     }
 
     if (event is PopEvent) {
-      widget.onPop?.call(event.activePage, event.result as T);
+      widget.onPop?.call(event.activeRoute, event.result as T);
     } else if (event is PushEvent) {
-      widget.onPush?.call(event.activePage);
+      widget.onPush?.call(event.activeRoute);
     }
   }
 
@@ -96,7 +96,7 @@ class PathPageListener<T> extends PageListener<T> {
         super(onPush: onPush, onPop: onPop, child: child, key: key);
 
   @override
-  bool isMatch(ActivePage pageInfo) => _path == pageInfo.currentPath;
+  bool isMatch(ActiveRoute activeRoute) => _path == activeRoute.path;
 }
 
 /// A router listener for a specific page id.
@@ -115,7 +115,7 @@ class IdPageListener<T> extends PageListener<T> {
         super(onPush: onPush, onPop: onPop, child: child, key: key);
 
   @override
-  bool isMatch(ActivePage pageInfo) => _id == pageInfo.id;
+  bool isMatch(ActiveRoute activeRoute) => _id == activeRoute.id;
 }
 
 /// A router listener for several page paths or page ids.
@@ -137,7 +137,7 @@ class MultiPageListener<T> extends PageListener<T> {
         super(onPush: onPush, onPop: onPop, child: child, key: key);
 
   @override
-  bool isMatch(ActivePage pageInfo) =>
-      (null != _paths && _paths!.any((path) => path == pageInfo.currentPath)) ||
-          (null != _ids && _ids!.any((id) => id == pageInfo.id));
+  bool isMatch(ActiveRoute activeRoute) =>
+      (null != _paths && _paths!.any((path) => path == activeRoute.path)) ||
+          (null != _ids && _ids!.any((id) => id == activeRoute.id));
 }
