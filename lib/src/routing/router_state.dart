@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../core/error.dart';
 import 'active_page.dart';
 import 'restoration.dart';
 import 'route_definition.dart';
-import 'router_error.dart';
 
 /// A router state.
 ///
@@ -100,7 +100,7 @@ class RouterState {
       (routeDefinition) => routeDefinition.match(path),
       orElse: () {
         if (isNotFound) {
-          throw RouterError('Path $path not found. Is it registered?\n');
+          throw AlbaError('Path $path not found. Is it registered?\n');
         }
 
         return _notFoundRoute;
@@ -157,7 +157,6 @@ class PopEvent extends RouterEvent {
 
 /// A router push event.
 class PushEvent extends RouterEvent {
-
   /// Creates a [PushEvent].
   PushEvent(ActivePage activePage) : super(activePage);
 }

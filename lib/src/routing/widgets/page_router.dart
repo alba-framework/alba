@@ -2,9 +2,9 @@ import 'package:flutter/material.dart' show MaterialPage, DialogRoute;
 import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../core/error.dart';
 import '../active_page.dart';
 import '../restoration.dart';
-import '../router_error.dart';
 import '../router_state.dart';
 
 /// A widget that manages routes and pages though the [Navigator].
@@ -52,7 +52,7 @@ class PageRouter extends StatefulWidget {
 
     assert(() {
       if (_routerState == null) {
-        throw RouterError(
+        throw AlbaError(
             'Router operation requested with a context that does not include a Router.\n');
       }
       return true;
