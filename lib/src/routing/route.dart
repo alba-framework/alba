@@ -1,3 +1,4 @@
+import 'package:alba/framework.dart';
 import 'package:flutter/material.dart' show MaterialPage, DialogRoute;
 import 'package:flutter/widgets.dart' hide Router;
 import 'package:path_to_regexp/path_to_regexp.dart';
@@ -15,6 +16,14 @@ typedef RouterPageBuilder = Page Function(
   BuildContext context,
   ActiveRoute activeRoute,
 );
+
+String _addTrailingSlash(String path) {
+  if ('/' == path[path.length - 1]) {
+    return path;
+  }
+
+  return '$path/';
+}
 
 /// A route definition for [Router].
 @immutable
@@ -41,7 +50,7 @@ class RouteDefinition {
     String path,
     this.widgetBuilder, {
     this.pageBuilder = defaultPageBuilder,
-  }) : _path = path {
+  }) : _path = _addTrailingSlash(path) {
     _parametersNames = [];
     _pathRegex = pathToRegExp(
       _path,
@@ -52,15 +61,15 @@ class RouteDefinition {
 
   /// Tests if a path match.
   bool match(String path) {
-    return _pathRegex.hasMatch(path);
+    return _pathRegex.hasMatch(_addTrailingSlash(path));
   }
 
   /// Extracts the parameters for a path.
   Map<String, String> parameters(String path) {
-    final match = _pathRegex.matchAsPrefix(path);
+    final match = _pathRegex.matchAsPrefix(_addTrailingSlash(path));
 
     if (null == match) {
-      return {};
+      throw AlbaError('Route does not match.');
     }
 
     return extract(_parametersNames, match); // => {'id': '12'}
