@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../route_definition.dart';
+import '../route.dart';
 import '../router_state.dart';
 import 'page_router.dart';
 
