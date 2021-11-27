@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart' hide Router;
 
 import '../../../routing.dart';
-import '../router_state.dart';
-import 'page_router.dart';
+import '../router.dart';
+import 'router.dart';
 
 /// A push event callback.
 typedef PushEventCallback = void Function(ActiveRoute activeRoute);
@@ -50,7 +50,7 @@ class _PageListenerState<T> extends State<PageListener<T>> {
   void initState() {
     super.initState();
     _routerEventStreamSubscription =
-        PageRouter
+        Router
             .of(context)
             .eventStream
             .listen(_notifyEvent);

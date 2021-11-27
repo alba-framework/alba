@@ -5,30 +5,27 @@ import '../framework/error.dart';
 import 'restoration.dart';
 import 'route.dart';
 
-/// A router state.
-///
-/// It maintains the state of the router, like routes, active pages,
-/// and so on...
-class RouterState {
-  /// The pages index.
+/// A router.
+class AlbaRouter {
+  /// The routes index.
   ///
-  /// Use [_nextPageIndex] for getting the next index.
-  int _pageIndex = 0;
+  /// Use [_nextRouteIndex] for getting the next index.
+  int _routeIndex = 0;
 
   /// The definition of routes.
   final List<RouteDefinition> routeDefinitions;
 
-  /// The list of active routes.
+  /// The active routes.
   List<ActiveRoute> activeRoutes = [];
 
-  /// The not found page.
+  /// The not found route.
   late final RouteDefinition _notFoundRoute;
 
-  /// A stream controller for route events.
+  /// A stream controller for router events.
   final _routerEventsController = BehaviorSubject<RouterEvent>();
 
-  /// Creates [RouterState]
-  RouterState({
+  /// Creates [AlbaRouter].
+  AlbaRouter({
     required this.routeDefinitions,
     String notFoundPath = '/404',
     String initialPath = '/',
@@ -37,7 +34,7 @@ class RouterState {
       ActiveRoute(
         _findRouteDefinition(initialPath),
         initialPath,
-        _nextPageIndex,
+        _nextRouteIndex,
         id: 'initial',
       )
     ];
@@ -45,27 +42,27 @@ class RouterState {
     _notFoundRoute = _findRouteDefinition(notFoundPath, isNotFound: true);
   }
 
-  /// The next page index
-  int get _nextPageIndex {
-    _pageIndex += 1;
-
-    return _pageIndex;
-  }
+  /// Gets the current path.
+  String get currentPath => activeRoutes.last.path;
 
   /// The event stream.
   ValueStream<RouterEvent> get eventStream => _routerEventsController.stream;
+
+  /// The next page index.
+  int get _nextRouteIndex => ++_routeIndex;
 
   /// Frees memory, closes streams, and so on...
   void clean() {
     _routerEventsController.close();
   }
 
-  /// Push new page by path.
+  /// Pushes a new page by path.
   ///
   /// [id] is used to match listeners.
   void push(String path, String? id) {
     var routeDefinition = _findRouteDefinition(path);
-    var activeRoute = ActiveRoute(routeDefinition, path, _nextPageIndex, id: id);
+    var activeRoute =
+        ActiveRoute(routeDefinition, path, _nextRouteIndex, id: id);
 
     activeRoutes.add(activeRoute);
 
@@ -73,7 +70,7 @@ class RouterState {
         ?.addPostFrameCallback((_) => _notifyPush(activeRoute));
   }
 
-  /// Pop a route.
+  /// Pops a route.
   void pop(Route route, dynamic result) {
     for (var i = activeRoutes.length - 1; i >= 0; i--) {
       var activePage = activeRoutes[i];
@@ -89,11 +86,7 @@ class RouterState {
     }
   }
 
-  /// Get the current path.
-  String currentPath() {
-    return activeRoutes.last.path;
-  }
-
+  /// Finds a route definition for a path.
   RouteDefinition _findRouteDefinition(String path, {bool isNotFound = false}) {
     var routeDefinition = routeDefinitions.firstWhere(
       (routeDefinition) => routeDefinition.match(path),
@@ -109,17 +102,17 @@ class RouterState {
     return routeDefinition;
   }
 
-  /// Notify a push event.
+  /// Notifies a push event.
   void _notifyPush(ActiveRoute activeRoute) {
     _routerEventsController.sink.add(PushEvent(activeRoute));
   }
 
-  /// Notify a pop event.
+  /// Notifies a pop event.
   void _notifyPop(ActiveRoute activeRoute, dynamic result) {
     _routerEventsController.sink.add(PopEvent(activeRoute, result));
   }
 
-  /// Restore pages.
+  /// Restores pages.
   void restorePages(RestorablePageInformationList restorablePages) {
     activeRoutes = restorablePages.value
         .map(
@@ -132,7 +125,7 @@ class RouterState {
         )
         .toList();
 
-    _pageIndex = activeRoutes.last.index + 1;
+    _routeIndex = activeRoutes.last.index + 1;
   }
 }
 

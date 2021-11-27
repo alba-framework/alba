@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart' show MaterialPage, DialogRoute;
-import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart' hide Router;
 import 'package:path_to_regexp/path_to_regexp.dart';
 
 import '../../routing.dart';
@@ -16,7 +16,7 @@ typedef RouterPageBuilder = Page Function(
   ActiveRoute activeRoute,
 );
 
-/// A route definition for [PageRouter].
+/// A route definition for [Router].
 @immutable
 class RouteDefinition {
   /// The path.
