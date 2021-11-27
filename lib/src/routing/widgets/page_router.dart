@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart' show MaterialPage, DialogRoute;
 import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../framework/error.dart';
-import '../active_page.dart';
 import '../restoration.dart';
 import '../router_state.dart';
 
@@ -90,7 +88,7 @@ class PageRouterState extends State<PageRouter> with RestorationMixin {
       key: widget._navigatorKey,
       pages: [
         for (var activePage in widget._routerState.activePages)
-          _buildPage(activePage)
+          activePage.buildPage(context)
       ],
       onPopPage: (route, result) {
         if (!route.didPop(result)) {
@@ -108,31 +106,9 @@ class PageRouterState extends State<PageRouter> with RestorationMixin {
 
   void _syncRestorablePages() {
     _restorablePages.value = widget._routerState.activePages
-        .map((activePage) => RestorablePageInformation(
-              path: activePage.currentPath,
-              index: activePage.index,
-              id: activePage.id,
-            ))
+        .map((activePage) =>
+            RestorablePageInformation.fromActivePage(activePage))
         .toList();
-  }
-
-  Page _buildPage(ActivePage activePage) {
-    if (activePage.routeDefinition.isDialog) {
-      return _DialogPage(
-        key: ValueKey(activePage.key),
-        restorationId: activePage.restorationId,
-        name: activePage.name,
-        child:
-            activePage.routeDefinition.builder(context, activePage.parameters),
-      );
-    }
-
-    return MaterialPage(
-      key: ValueKey(activePage.key),
-      restorationId: activePage.restorationId,
-      name: activePage.name,
-      child: activePage.routeDefinition.builder(context, activePage.parameters),
-    );
   }
 
   /// Adds new page.
@@ -144,30 +120,4 @@ class PageRouterState extends State<PageRouter> with RestorationMixin {
 
   /// Router event stream.
   ValueStream<RouterEvent> get eventStream => widget._routerState.eventStream;
-}
-
-class _DialogPage<T> extends Page<T> {
-  final Widget child;
-
-  const _DialogPage({
-    required this.child,
-    LocalKey? key,
-    String? name,
-    Object? arguments,
-    String? restorationId,
-  }) : super(
-          key: key,
-          name: name,
-          arguments: arguments,
-          restorationId: restorationId,
-        );
-
-  @override
-  Route<T> createRoute(BuildContext context) {
-    return DialogRoute<T>(
-      context: context,
-      builder: (_) => child,
-      settings: this,
-    );
-  }
 }

@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import '../framework/error.dart';
 import 'active_page.dart';
 import 'restoration.dart';
-import 'route_definition.dart';
+import 'route.dart';
 
 /// A router state.
 ///
