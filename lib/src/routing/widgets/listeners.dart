@@ -18,7 +18,7 @@ typedef PopEventCallback<T> = void Function(ActiveRoute activeRoute, T? result);
 ///
 /// The type argument `T` is the page's result type, as used by [PopEventCallback].
 /// The type `void` may be used if the route does not return a value.
-abstract class PageListener<T> extends StatefulWidget {
+abstract class RouterListener<T> extends StatefulWidget {
   /// The callback which is called when a page is pushed.
   final PushEventCallback? onPush;
 
@@ -28,8 +28,8 @@ abstract class PageListener<T> extends StatefulWidget {
   /// The widget below this widget in the tree.
   final Widget? child;
 
-  /// Creates a [PageListener].
-  const PageListener({
+  /// Creates a [RouterListener].
+  const RouterListener({
     this.onPush,
     this.onPop,
     this.child,
@@ -37,13 +37,13 @@ abstract class PageListener<T> extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _PageListenerState<T> createState() => _PageListenerState<T>();
+  _RouterListenerState<T> createState() => _RouterListenerState<T>();
 
   /// Test if the page matches.
   bool isMatch(ActiveRoute activeRoute);
 }
 
-class _PageListenerState<T> extends State<PageListener<T>> {
+class _RouterListenerState<T> extends State<RouterListener<T>> {
   late final StreamSubscription<RouterEvent> _routerEventStreamSubscription;
 
   @override
@@ -81,11 +81,11 @@ class _PageListenerState<T> extends State<PageListener<T>> {
 }
 
 /// A router listener for a specific page path.
-class PathPageListener<T> extends PageListener<T> {
+class PathRouterListener<T> extends RouterListener<T> {
   final String _path;
 
-  /// Creates a [PathPageListener].
-  const PathPageListener({
+  /// Creates a [PathRouterListener].
+  const PathRouterListener({
     required String path,
     PushEventCallback? onPush,
     PopEventCallback<T>? onPop,
@@ -100,11 +100,11 @@ class PathPageListener<T> extends PageListener<T> {
 }
 
 /// A router listener for a specific page id.
-class IdPageListener<T> extends PageListener<T> {
+class IdRouterListener<T> extends RouterListener<T> {
   final String _id;
 
-  /// Creates a [IdPageListener].
-  const IdPageListener({
+  /// Creates a [IdRouterListener].
+  const IdRouterListener({
     required String id,
     PushEventCallback? onPush,
     PopEventCallback<T>? onPop,
@@ -119,12 +119,12 @@ class IdPageListener<T> extends PageListener<T> {
 }
 
 /// A router listener for several page paths or page ids.
-class MultiPageListener<T> extends PageListener<T> {
+class MultipleRouterListener<T> extends RouterListener<T> {
   final List<String>? _paths;
   final List<String>? _ids;
 
-  /// Creates a [MultiPageListener].
-  const MultiPageListener({
+  /// Creates a [MultipleRouterListener].
+  const MultipleRouterListener({
     PushEventCallback? onPush,
     PopEventCallback<T>? onPop,
     Widget? child,
