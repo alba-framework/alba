@@ -1,5 +1,5 @@
 **THIS IS STILL IN DEVELOPMENT**
 
-# Alba Framework
+# Alba
 
-> Boost your Flutter development.
+> Alba is a framework that boosts your Flutter development.
