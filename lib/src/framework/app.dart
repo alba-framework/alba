@@ -40,7 +40,6 @@ App createApp({
 
   _instance = App._(
     widget: widget,
-    restorationScopeId: restorationScopeId,
     appProviders: appProviders,
     routerRootConfiguration: routerRootConfiguration,
   );
@@ -68,12 +67,6 @@ class App {
   /// Useful to bootstrap, register or configure services.
   final List<AppProvider>? appProviders;
 
-  /// The identifier to use for state restoration of this app.
-  ///
-  /// Providing a restoration ID inserts a [RootRestorationScope] into the
-  /// widget hierarchy, which enables state restoration for descendant widgets.
-  final String? restorationScopeId;
-
   /// The router root configuration.
   ///
   /// Setting it enables the router.
@@ -88,7 +81,6 @@ class App {
   /// Creates an [App].
   App._({
     required this.widget,
-    this.restorationScopeId,
     this.appProviders,
     this.routerRootConfiguration,
   });
@@ -141,13 +133,6 @@ class App {
 
           return widget;
         },
-      );
-    }
-
-    if (null != restorationScopeId) {
-      child = RootRestorationScope(
-        restorationId: restorationScopeId,
-        child: child,
       );
     }
 

@@ -88,24 +88,6 @@ void main() {
       expect(app.pageRouteInformationParser, null);
     });
 
-    testWidgets('runs app with restoration scope', (WidgetTester tester) async {
-      var key = UniqueKey();
-      var app = createApp(
-        restorationScopeId: 'root',
-        widget: Container(key: key),
-      );
-      await app.run();
-
-      var rootRestorationScopeFinder = find.byType(RootRestorationScope);
-      expect(rootRestorationScopeFinder, findsOneWidget);
-      expect(
-          tester
-              .widget<RootRestorationScope>(rootRestorationScopeFinder)
-              .restorationId,
-          'root');
-      expect(find.byKey(key), findsOneWidget);
-    });
-
     testWidgets('runs app with the router', (WidgetTester tester) async {
       var key = UniqueKey();
       var app = createApp(
