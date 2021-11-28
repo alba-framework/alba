@@ -23,6 +23,14 @@ void main() {
       expect(routeDefinition.match('/user/abcd/details'), true);
       expect(routeDefinition.match('/user//details'), false);
     });
+
+    test('matches a path with a custom parameter', () {
+      var routeDefinition = RouteDefinition(
+          r'/user/:user(\d+)', (context, parameters) => Container());
+
+      expect(routeDefinition.match('/user/1234'), true);
+      expect(routeDefinition.match('/user/abcd'), false);
+    });
   });
 
   group('ActiveRoute', () {
