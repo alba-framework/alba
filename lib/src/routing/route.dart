@@ -1,4 +1,3 @@
-import 'package:alba/framework.dart';
 import 'package:flutter/material.dart' show MaterialPage, DialogRoute;
 import 'package:flutter/widgets.dart' hide Router;
 import 'package:path_to_regexp/path_to_regexp.dart';
@@ -69,7 +68,7 @@ class RouteDefinition {
     final match = _pathRegex.matchAsPrefix(_addTrailingSlash(path));
 
     if (null == match) {
-      throw AlbaError('Route does not match.');
+      return {};
     }
 
     return extract(_parametersNames, match); // => {'id': '12'}

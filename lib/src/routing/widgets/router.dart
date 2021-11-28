@@ -11,7 +11,7 @@ import '../router.dart';
 /// given [BuildContext]. Be sure to provide a [BuildContext] below the
 /// intended [Router].
 class Router extends StatefulWidget {
-  final AlbaRouter _routerState;
+  final AlbaRouter _albaRouter;
 
   final void Function() _notifyDelegate;
 
@@ -20,12 +20,12 @@ class Router extends StatefulWidget {
 
   /// Creates a [Router].
   const Router({
-    required AlbaRouter routerState,
+    required AlbaRouter albaRouter,
     required void Function() notifyDelegate,
     GlobalKey<NavigatorState>? navigatorKey,
     Key? key,
   })  : _navigatorKey = navigatorKey,
-        _routerState = routerState,
+        _albaRouter = albaRouter,
         _notifyDelegate = notifyDelegate,
         super(key: key);
 
@@ -77,7 +77,7 @@ class RouterState extends State<Router> with RestorationMixin {
     if (_restorablePages.value.isEmpty) {
       _syncRestorablePages();
     } else {
-      widget._routerState.restorePages(_restorablePages);
+      widget._albaRouter.restorePages(_restorablePages);
     }
   }
 
@@ -87,7 +87,7 @@ class RouterState extends State<Router> with RestorationMixin {
       restorationScopeId: 'navigator',
       key: widget._navigatorKey,
       pages: [
-        for (var activePage in widget._routerState.activeRoutes)
+        for (var activePage in widget._albaRouter.activeRoutes)
           activePage.buildPage(context)
       ],
       onPopPage: (route, result) {
@@ -95,7 +95,7 @@ class RouterState extends State<Router> with RestorationMixin {
           return false;
         }
 
-        widget._routerState.pop(route, result);
+        widget._albaRouter.pop(route, result);
         _syncRestorablePages();
         widget._notifyDelegate();
 
@@ -105,19 +105,19 @@ class RouterState extends State<Router> with RestorationMixin {
   }
 
   void _syncRestorablePages() {
-    _restorablePages.value = widget._routerState.activeRoutes
+    _restorablePages.value = widget._albaRouter.activeRoutes
         .map((activePage) =>
             RestorablePageInformation.fromActivePage(activePage))
         .toList();
   }
 
-  /// Adds new page.
+  /// Pushes a new route.
   void push(String path, {String? id}) {
-    widget._routerState.push(path, id);
+    widget._albaRouter.push(path, id);
     _syncRestorablePages();
     widget._notifyDelegate();
   }
 
   /// Router event stream.
-  ValueStream<RouterEvent> get eventStream => widget._routerState.eventStream;
+  ValueStream<RouterEvent> get eventStream => widget._albaRouter.eventStream;
 }

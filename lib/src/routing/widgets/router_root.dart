@@ -132,7 +132,7 @@ class AlbaRouterDelegate extends RouterDelegate<String>
   Widget build(BuildContext context) {
     return Router(
       navigatorKey: navigatorKey,
-      routerState: _routerState,
+      albaRouter: _routerState,
       notifyDelegate: () => notifyListeners(),
     );
   }

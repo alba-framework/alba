@@ -27,7 +27,7 @@ class AlbaRouter {
   /// Creates [AlbaRouter].
   AlbaRouter({
     required this.routeDefinitions,
-    String notFoundPath = '/404',
+    String notFoundPath = '/not-found',
     String initialPath = '/',
   }) {
     activeRoutes = [
