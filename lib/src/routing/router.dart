@@ -72,17 +72,13 @@ class AlbaRouter {
 
   /// Pops a route.
   void pop(Route route, dynamic result) {
-    for (var i = activeRoutes.length - 1; i >= 0; i--) {
-      var activePage = activeRoutes[i];
+    var activeRoute = _findActiveRoute(route);
 
-      if (activePage.name == route.settings.name) {
-        activeRoutes.removeAt(i);
+    if (null != activeRoute) {
+      activeRoutes.remove(activeRoute);
 
-        WidgetsBinding.instance
-            ?.addPostFrameCallback((_) => _notifyPop(activePage, result));
-
-        break;
-      }
+      WidgetsBinding.instance
+          ?.addPostFrameCallback((_) => _notifyPop(activeRoute, result));
     }
   }
 
@@ -100,6 +96,18 @@ class AlbaRouter {
     );
 
     return routeDefinition;
+  }
+
+  ActiveRoute? _findActiveRoute(Route route) {
+    for (var i = activeRoutes.length - 1; i >= 0; i--) {
+      var activeRoute = activeRoutes[i];
+
+      if (activeRoute.name == route.settings.name) {
+        return activeRoute;
+      }
+    }
+
+    return null;
   }
 
   /// Notifies a push event.
