@@ -9,5 +9,6 @@
 ```sh
 flutter create -t app my_project
 cd my_project
+flutter pub add alba
 flutter pub run alba init
 ```
