@@ -1,3 +1,8 @@
+## 0.0.2
+
+* Added `alba` tool with `init` command.
+* Added an example.
+
 ## 0.0.1
 
 * Development initial release.
