@@ -2,5 +2,7 @@
 
 DART_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.dart')
 
-flutter format $DART_FILES
-git add $DART_FILES
+if [ -n "$PHP_FILES" ]; then
+  flutter format $DART_FILES
+  git add $DART_FILES
+fi
