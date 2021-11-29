@@ -11,14 +11,10 @@ RouterRoot createRouter(WidgetBuilder homeScreenBuilder) {
           '/',
           (context, parameters) => homeScreenBuilder(context),
         ),
-        RouteDefinition(
-            '/screen-1', (context, parameters) => Container()),
-        RouteDefinition(
-            '/screen-2', (context, parameters) => Container()),
-        RouteDefinition(
-            '/screen-3', (context, parameters) => Container()),
-        RouteDefinition(
-            '/screen-4', (context, parameters) => Container()),
+        RouteDefinition('/screen-1', (context, parameters) => Container()),
+        RouteDefinition('/screen-2', (context, parameters) => Container()),
+        RouteDefinition('/screen-3', (context, parameters) => Container()),
+        RouteDefinition('/screen-4', (context, parameters) => Container()),
         RouteDefinition('/not-found', (context, parameters) => Container()),
       ],
     ),
@@ -61,7 +57,9 @@ void main() {
 
       expect(pushActiveRoute!.path, '/screen-1');
 
-      tester.state<NavigatorState>(find.byType(Navigator)).pop('screen was popped');
+      tester
+          .state<NavigatorState>(find.byType(Navigator))
+          .pop('screen was popped');
       await tester.pumpAndSettle();
 
       expect(popActiveRoute!.path, '/screen-1');
@@ -89,12 +87,16 @@ void main() {
         );
       }));
 
-      tester.state<RouterState>(find.byType(Router)).push('/screen-1', id: 'my-id');
+      tester
+          .state<RouterState>(find.byType(Router))
+          .push('/screen-1', id: 'my-id');
       await tester.pumpAndSettle();
 
       expect(pushActiveRoute!.path, '/screen-1');
 
-      tester.state<NavigatorState>(find.byType(Navigator)).pop('screen was popped');
+      tester
+          .state<NavigatorState>(find.byType(Navigator))
+          .pop('screen was popped');
       await tester.pumpAndSettle();
 
       expect(popActiveRoute!.path, '/screen-1');
@@ -103,7 +105,8 @@ void main() {
   });
 
   group('PathPageListener', () {
-    testWidgets('listens to multiple ids and paths', (WidgetTester tester) async {
+    testWidgets('listens to multiple ids and paths',
+        (WidgetTester tester) async {
       ActiveRoute? popActiveRoute;
       String? popResult;
       ActiveRoute? pushActiveRoute;
@@ -123,12 +126,16 @@ void main() {
         );
       }));
 
-      tester.state<RouterState>(find.byType(Router)).push('/screen-1', id: 'id-1');
+      tester
+          .state<RouterState>(find.byType(Router))
+          .push('/screen-1', id: 'id-1');
       await tester.pumpAndSettle();
 
       expect(pushActiveRoute!.path, '/screen-1');
 
-      tester.state<RouterState>(find.byType(Router)).push('/screen-2', id: 'id-2');
+      tester
+          .state<RouterState>(find.byType(Router))
+          .push('/screen-2', id: 'id-2');
       await tester.pumpAndSettle();
 
       expect(pushActiveRoute!.path, '/screen-2');
@@ -143,25 +150,33 @@ void main() {
 
       expect(pushActiveRoute!.path, '/screen-4');
 
-      tester.state<NavigatorState>(find.byType(Navigator)).pop('screen 4 was popped');
+      tester
+          .state<NavigatorState>(find.byType(Navigator))
+          .pop('screen 4 was popped');
       await tester.pumpAndSettle();
 
       expect(popActiveRoute!.path, '/screen-4');
       expect(popResult, 'screen 4 was popped');
 
-      tester.state<NavigatorState>(find.byType(Navigator)).pop('screen 3 was popped');
+      tester
+          .state<NavigatorState>(find.byType(Navigator))
+          .pop('screen 3 was popped');
       await tester.pumpAndSettle();
 
       expect(popActiveRoute!.path, '/screen-3');
       expect(popResult, 'screen 3 was popped');
 
-      tester.state<NavigatorState>(find.byType(Navigator)).pop('screen 2 was popped');
+      tester
+          .state<NavigatorState>(find.byType(Navigator))
+          .pop('screen 2 was popped');
       await tester.pumpAndSettle();
 
       expect(popActiveRoute!.path, '/screen-2');
       expect(popResult, 'screen 2 was popped');
 
-      tester.state<NavigatorState>(find.byType(Navigator)).pop('screen 1 was popped');
+      tester
+          .state<NavigatorState>(find.byType(Navigator))
+          .pop('screen 1 was popped');
       await tester.pumpAndSettle();
 
       expect(popActiveRoute!.path, '/screen-1');

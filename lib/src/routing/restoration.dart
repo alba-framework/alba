@@ -17,20 +17,18 @@ class RestorablePageInformationList
   List<RestorablePageInformation> fromPrimitives(Object? data) {
     return List<RestorablePageInformation>.from(
       (data as List).map(
-            (primitive) =>
-            RestorablePageInformation.fromPrimitives(
-              List<String?>.from(primitive as List),
-            ),
+        (primitive) => RestorablePageInformation.fromPrimitives(
+          List<String?>.from(primitive as List),
+        ),
       ),
     ).toList();
   }
 
   @override
-  Object? toPrimitives() =>
-      value
-          .map((restorablePageInformation) =>
+  Object? toPrimitives() => value
+      .map((restorablePageInformation) =>
           restorablePageInformation.toPrimitives())
-          .toList();
+      .toList();
 }
 
 /// An information for restoring a page.

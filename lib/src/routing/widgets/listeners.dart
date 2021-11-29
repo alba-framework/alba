@@ -50,10 +50,7 @@ class _RouterListenerState<T> extends State<RouterListener<T>> {
   void initState() {
     super.initState();
     _routerEventStreamSubscription =
-        Router
-            .of(context)
-            .eventStream
-            .listen(_notifyEvent);
+        Router.of(context).eventStream.listen(_notifyEvent);
   }
 
   @override
@@ -91,8 +88,7 @@ class PathRouterListener<T> extends RouterListener<T> {
     PopEventCallback<T>? onPop,
     Widget? child,
     Key? key,
-  })
-      : _path = path,
+  })  : _path = path,
         super(onPush: onPush, onPop: onPop, child: child, key: key);
 
   @override
@@ -110,8 +106,7 @@ class IdRouterListener<T> extends RouterListener<T> {
     PopEventCallback<T>? onPop,
     Widget? child,
     Key? key,
-  })
-      : _id = id,
+  })  : _id = id,
         super(onPush: onPush, onPop: onPop, child: child, key: key);
 
   @override
@@ -131,13 +126,12 @@ class MultipleRouterListener<T> extends RouterListener<T> {
     List<String>? paths,
     List<String>? ids,
     Key? key,
-  })
-      : _paths = paths,
+  })  : _paths = paths,
         _ids = ids,
         super(onPush: onPush, onPop: onPop, child: child, key: key);
 
   @override
   bool isMatch(ActiveRoute activeRoute) =>
       (null != _paths && _paths!.any((path) => path == activeRoute.path)) ||
-          (null != _ids && _ids!.any((id) => id == activeRoute.id));
+      (null != _ids && _ids!.any((id) => id == activeRoute.id));
 }
