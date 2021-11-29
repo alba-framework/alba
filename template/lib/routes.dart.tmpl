@@ -1,0 +1,15 @@
+import 'package:alba/routing.dart';
+
+import 'package:{{projectName}}/app/screens/home_screen.dart';
+import 'package:{{projectName}}/app/screens/not_found_screen.dart';
+
+var routes = [
+  RouteDefinition(
+    '/not-found',
+    (context, arguments) => const NotFoundScreen(),
+  ),
+  RouteDefinition(
+    '/',
+    (context, arguments) => const HomeScreen(),
+  ),
+];

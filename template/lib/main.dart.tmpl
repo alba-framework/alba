@@ -1,0 +1,22 @@
+import 'package:alba/framework.dart';
+import 'package:alba/routing.dart';
+
+import 'package:{{projectName}}/app/my_app.dart';
+import 'package:{{projectName}}/routes.dart';
+
+class ServiceLocatorProvider implements AppProvider {
+  @override
+  Future<void> boot(ServiceLocator serviceLocator) async {}
+}
+
+void main() {
+  createApp(
+    appProviders: [
+      ServiceLocatorProvider(),
+    ],
+    routerRootConfiguration: RouterRootConfiguration(
+      routeDefinitions: routes,
+    ),
+    widget: const MyApp(),
+  ).run();
+}

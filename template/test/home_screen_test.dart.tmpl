@@ -1,0 +1,13 @@
+import 'package:{{projectName}}/app/screens/home_screen.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  group('HomeScreen', () {
+    testWidgets('displays a text', (WidgetTester tester) async {
+      await tester.pumpWidget(const HomeScreen());
+
+      expect(find.byType(Text), findsOneWidget);
+    });
+  });
+}

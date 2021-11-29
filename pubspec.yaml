@@ -13,8 +13,10 @@ dependencies:
   flutter:
     sdk: flutter
   get_it: ^7.2.0
+  path: ^1.8.0
   path_to_regexp: ^0.4.0
   rxdart: ^0.27.2
+  yaml: ^3.1.0
 
 dev_dependencies:
   flutter_lints: ^1.0.0
