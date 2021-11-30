@@ -2,7 +2,7 @@
 
 # Alba
 
-> Alba is a framework that boosts your Flutter development.
+> Alba is a framework that boosts Flutter project development.
 
 ## Installation
 
