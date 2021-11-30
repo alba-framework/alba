@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../routing.dart';
+import 'env.dart';
 import 'error.dart';
 
 /// A service locator.
@@ -17,6 +18,9 @@ abstract class AppProvider {
 
 /// The app instance.
 App? _instance;
+
+/// Flag to determine if the app is running in a testing environment.
+bool _isTesting = false;
 
 /// Gets app instance.
 App app() {
@@ -47,11 +51,21 @@ App createApp({
   return _instance!;
 }
 
+/// Set testing mode.
+///
+/// It is useful for testing.
+@visibleForTesting
+void setTesting() {
+  _isTesting = true;
+}
+
 /// Clears the app.
 ///
 /// It is useful for testing.
+@visibleForTesting
 void clearApp() {
   _instance = null;
+  _isTesting = false;
 }
 
 /// An Application.
@@ -110,8 +124,16 @@ class App {
 
   /// Boots the app and the providers.
   Future<void> _boot() async {
+    await _loadEnv();
+
     for (var boot in appProviders ?? []) {
       await boot.boot(serviceLocator);
+    }
+  }
+
+  Future<void> _loadEnv() async {
+    if (!_isTesting) {
+      await EnvironmentManager().load();
     }
   }
 

@@ -30,6 +30,7 @@ class Init {
     var entityList = _getEntities(templatePath);
     _createDirectories(templatePath, entityList);
     _createFiles(templatePath, entityList);
+    _prepareEnvironment(templatePath);
 
     stdout.write('Done.\n'
         'Create something great!\n');
@@ -92,18 +93,29 @@ class Init {
     Directory(join(projectPath, 'test')).createSync();
   }
 
+  String _prepareDestinationPath(String templatePath, FileSystemEntity entity) {
+    var entityRelativePath = entity.path.replaceFirst(templatePath, '');
+
+    if (entity is File) {
+      entityRelativePath =
+          entityRelativePath.replaceFirst(RegExp('.tmpl\$'), '');
+    }
+
+    return projectPath + entityRelativePath;
+  }
+
+  String _replaceVariables(String contents) {
+    return contents.replaceAll('{{projectName}}', projectName);
+  }
+
   void _createDirectories(
     String templatePath,
     List<FileSystemEntity> entityList,
   ) {
     for (var entity in entityList) {
       if (entity is Directory) {
-        var destinationPath =
-            projectPath + entity.path.replaceFirst(templatePath, '');
-
-        if (entity is Directory) {
-          Directory(destinationPath).createSync(recursive: true);
-        }
+        var destinationPath = _prepareDestinationPath(templatePath, entity);
+        Directory(destinationPath).createSync(recursive: true);
       }
     }
   }
@@ -114,19 +126,55 @@ class Init {
   ) {
     for (var entity in entityList) {
       if (entity is File) {
-        var destinationPath = projectPath +
-            entity.path
-                .replaceFirst(templatePath, '')
-                .replaceFirst(RegExp('.tmpl\$'), '');
-
-        var templateContents = entity.readAsStringSync();
-        var renderedContents =
-            templateContents.replaceAll('{{projectName}}', projectName);
+        var renderedContents = _replaceVariables(entity.readAsStringSync());
+        var destinationPath = _prepareDestinationPath(templatePath, entity);
 
         File(destinationPath)
           ..createSync(recursive: true)
           ..writeAsStringSync(renderedContents);
       }
+    }
+  }
+
+  void _prepareEnvironment(String templatePath) {
+    _createEnvFiles(templatePath);
+    _addEnvToGitIgnore();
+    _addEnvToAssets();
+  }
+
+  void _createEnvFiles(String templatePath) {
+    var envFile = File(join(templatePath, '.env.tmpl'));
+    var renderedContents = _replaceVariables(envFile.readAsStringSync());
+    var destinationPath = _prepareDestinationPath(templatePath, envFile);
+
+    File(destinationPath)
+      ..createSync(recursive: true)
+      ..writeAsStringSync(renderedContents);
+
+    File('$destinationPath.example')
+      ..createSync(recursive: true)
+      ..writeAsStringSync(renderedContents);
+  }
+
+  void _addEnvToAssets() {
+    var pubspecFile = File(join(projectPath, 'pubspec.yaml'));
+    var updatedContents = pubspecFile
+        .readAsStringSync()
+        .replaceFirst('  # assets:', '  assets:\n    - .env');
+    pubspecFile.writeAsStringSync(updatedContents);
+  }
+
+  void _addEnvToGitIgnore() {
+    var gitIgnoreFile = File(join(projectPath, '.gitignore'));
+
+    if (gitIgnoreFile.existsSync() &&
+        !gitIgnoreFile
+            .readAsStringSync()
+            .contains(RegExp(r'^\.env$', multiLine: true))) {
+      gitIgnoreFile.writeAsStringSync(
+        '\n# Environment\n.env\n',
+        mode: FileMode.append,
+      );
     }
   }
 }

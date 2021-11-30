@@ -34,8 +34,9 @@ class AppWithRouterTest extends StatelessWidget {
 
 void main() {
   group('App', () {
-    setUp(() async {
+    setUp(() {
       clearApp();
+      setTesting();
     });
 
     test('creates the app', () {
