@@ -35,38 +35,38 @@ class AppWithRouterTest extends StatelessWidget {
 void main() {
   group('App', () {
     setUp(() {
-      clearApp();
-      setTesting();
+      App.clear();
+      App.setTesting();
     });
 
     test('creates the app', () {
-      var app = createApp(widget: Container());
+      var app = App.create(widget: Container());
 
       expect(app, isA<App>());
     });
 
     test('only one can be instantiated', () {
-      createApp(widget: Container());
+      App.create(widget: Container());
 
-      expect(() => createApp(widget: Container()), throwsA(isA<AlbaError>()));
+      expect(() => App.create(widget: Container()), throwsA(isA<AlbaError>()));
     });
 
     test('gets the instance', () {
-      var app1 = createApp(widget: Container());
+      var app1 = App.create(widget: Container());
       var app2 = app();
 
       expect(app1, app2);
     });
 
     test('gets the service locator', () {
-      var app = createApp(widget: Container());
+      var app = App.create(widget: Container());
 
       expect(app.serviceLocator, isA<ServiceLocator>());
     });
 
     testWidgets('boots providers', (WidgetTester tester) async {
       var spy = Spy();
-      var app = createApp(
+      var app = App.create(
         appProviders: [ProviderTest(spy)],
         widget: Container(),
       );
@@ -77,7 +77,7 @@ void main() {
 
     testWidgets('runs app', (WidgetTester tester) async {
       var key = UniqueKey();
-      var app = createApp(
+      var app = App.create(
         widget: Container(key: key),
       );
       await app.run();
@@ -91,7 +91,7 @@ void main() {
 
     testWidgets('runs app with the router', (WidgetTester tester) async {
       var key = UniqueKey();
-      var app = createApp(
+      var app = App.create(
         routerRootConfiguration: RouterRootConfiguration(routeDefinitions: [
           RouteDefinition('/', (context, parameters) => Container()),
           RouteDefinition('/not-found', (context, parameters) => Container()),
@@ -107,7 +107,7 @@ void main() {
     });
 
     testWidgets('gets navigator context', (WidgetTester tester) async {
-      var app = createApp(
+      var app = App.create(
         routerRootConfiguration: RouterRootConfiguration(routeDefinitions: [
           RouteDefinition('/', (context, parameters) => Container()),
           RouteDefinition('/not-found', (context, parameters) => Container()),

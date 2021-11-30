@@ -16,60 +16,21 @@ abstract class AppProvider {
   Future<void> boot(ServiceLocator serviceLocator);
 }
 
-/// The app instance.
-App? _instance;
-
-/// Flag to determine if the app is running in a testing environment.
-bool _isTesting = false;
-
 /// Gets app instance.
 App app() {
-  if (null == _instance) {
+  if (null == App._instance) {
     throw AlbaError('App is not created yet!');
   }
 
-  return _instance!;
-}
-
-/// Creates the app.
-App createApp({
-  required Widget widget,
-  String? restorationScopeId,
-  List<AppProvider>? appProviders,
-  RouterRootConfiguration? routerRootConfiguration,
-}) {
-  if (null != _instance) {
-    throw AlbaError('App is already created!');
-  }
-
-  _instance = App._(
-    widget: widget,
-    appProviders: appProviders,
-    routerRootConfiguration: routerRootConfiguration,
-  );
-
-  return _instance!;
-}
-
-/// Set testing mode.
-///
-/// It is useful for testing.
-@visibleForTesting
-void setTesting() {
-  _isTesting = true;
-}
-
-/// Clears the app.
-///
-/// It is useful for testing.
-@visibleForTesting
-void clearApp() {
-  _instance = null;
-  _isTesting = false;
+  return App._instance!;
 }
 
 /// An Application.
 class App {
+  static App? _instance;
+
+  static bool _isTesting = false;
+
   /// The service locator.
   final ServiceLocator serviceLocator = ServiceLocator.instance;
 
@@ -98,6 +59,43 @@ class App {
     this.appProviders,
     this.routerRootConfiguration,
   });
+
+  /// Creates the app.
+  factory App.create({
+    required Widget widget,
+    String? restorationScopeId,
+    List<AppProvider>? appProviders,
+    RouterRootConfiguration? routerRootConfiguration,
+  }) {
+    if (null != _instance) {
+      throw AlbaError('App is already created!');
+    }
+
+    _instance = App._(
+      widget: widget,
+      appProviders: appProviders,
+      routerRootConfiguration: routerRootConfiguration,
+    );
+
+    return _instance!;
+  }
+
+  /// Set testing mode.
+  ///
+  /// It is useful for testing.
+  @visibleForTesting
+  static void setTesting() {
+    _isTesting = true;
+  }
+
+  /// Clears the app.
+  ///
+  /// It is useful for testing.
+  @visibleForTesting
+  static void clear() {
+    _instance = null;
+    _isTesting = false;
+  }
 
   /// The navigator context.
   ///

@@ -3,7 +3,7 @@ import 'package:alba/routing.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  createApp(
+  App.create(
     appProviders: [
       ServiceLocatorProvider(),
     ],
