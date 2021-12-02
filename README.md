@@ -12,3 +12,13 @@ cd my_project
 flutter pub add alba
 flutter pub run alba init
 ```
+
+## Features
+
+- Routing
+- Service locator
+- Service providers
+- Environment management
+- Error handler
+
+And more soon...
