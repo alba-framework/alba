@@ -1,3 +1,8 @@
+## 0.0.3
+
+* Added environment management.
+* Added error handler.
+
 ## 0.0.2
 
 * Added `alba` tool with `init` command.
