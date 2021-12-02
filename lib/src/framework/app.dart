@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import '../../routing.dart';
 import 'env.dart';
 import 'error.dart';
+import 'error_handler.dart';
 
 /// A service locator.
 ///
@@ -37,10 +38,13 @@ class App {
   /// The app widget.
   final Widget widget;
 
-  /// The app providers
+  /// The app providers.
   ///
   /// Useful to bootstrap, register or configure services.
   final List<AppProvider>? appProviders;
+
+  /// The error listeners.
+  final List<ErrorListener> errorListeners;
 
   /// The router root configuration.
   ///
@@ -58,6 +62,7 @@ class App {
     required this.widget,
     this.appProviders,
     this.routerRootConfiguration,
+    this.errorListeners = const [],
   });
 
   /// Creates the app.
@@ -66,6 +71,7 @@ class App {
     String? restorationScopeId,
     List<AppProvider>? appProviders,
     RouterRootConfiguration? routerRootConfiguration,
+    List<ErrorListener>? errorListeners,
   }) {
     if (null != _instance) {
       throw AlbaError('App is already created!');
@@ -75,6 +81,7 @@ class App {
       widget: widget,
       appProviders: appProviders,
       routerRootConfiguration: routerRootConfiguration,
+      errorListeners: errorListeners ?? [DebugErrorListener()],
     );
 
     return _instance!;
@@ -117,7 +124,7 @@ class App {
   Future<void> run() async {
     await _boot();
 
-    runApp(_createChild());
+    ErrorHandler(errorListeners).run(() => runApp(_createChild()));
   }
 
   /// Boots the app and the providers.
