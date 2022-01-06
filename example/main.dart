@@ -22,11 +22,11 @@ class ServiceLocatorProvider implements AppProvider {
 var routes = [
   RouteDefinition(
     '/not-found',
-    (context, arguments) => const NotFoundScreen(),
+    (context, parameters) => const NotFoundScreen(),
   ),
   RouteDefinition(
     '/',
-    (context, arguments) => const HomeScreen(),
+    (context, parameters) => const HomeScreen(),
   ),
 ];
 
