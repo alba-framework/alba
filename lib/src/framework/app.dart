@@ -68,7 +68,6 @@ class App {
   /// Creates the app.
   factory App.create({
     required Widget widget,
-    String? restorationScopeId,
     List<AppProvider>? appProviders,
     RouterRootConfiguration? routerRootConfiguration,
     List<ErrorListener>? errorListeners,
