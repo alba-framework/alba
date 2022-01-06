@@ -42,7 +42,7 @@ class Init {
     stdout.write('Welcome to Alba!\n\n'
         'This command will init Alba for the current project "$projectName" in path "$projectPath".\n'
         'It will REPLACE lib and tests directories and also add (or replace) files to project root.\n\n'
-        'Are you sure? (yes/no): ');
+        'Are you sure? (y/N): ');
     var answer = stdin.readLineSync();
 
     return null != answer &&
