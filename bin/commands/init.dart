@@ -97,8 +97,9 @@ class Init {
     var entityRelativePath = entity.path.replaceFirst(templatePath, '');
 
     if (entity is File) {
-      entityRelativePath =
-          entityRelativePath.replaceFirst(RegExp('.tmpl\$'), '');
+      entityRelativePath = entityRelativePath
+          .replaceFirst(RegExp('/dot-'), '/.')
+          .replaceFirst(RegExp('.tmpl\$'), '');
     }
 
     return projectPath + entityRelativePath;
@@ -143,7 +144,7 @@ class Init {
   }
 
   void _createEnvFiles(String templatePath) {
-    var envFile = File(join(templatePath, '.env.tmpl'));
+    var envFile = File(join(templatePath, 'dot-env.tmpl'));
     var renderedContents = _replaceVariables(envFile.readAsStringSync());
     var destinationPath = _prepareDestinationPath(templatePath, envFile);
 
