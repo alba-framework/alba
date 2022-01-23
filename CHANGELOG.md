@@ -1,3 +1,10 @@
+## 0.0.4
+
+* Fix init command. Dotfiles weren't created.
+* Fix template example test.
+* Update router. Implement custom `pop` and add `removeRoute`.
+* Update dependencies.
+
 ## 0.0.3
 
 * Added environment management.
