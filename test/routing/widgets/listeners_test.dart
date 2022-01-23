@@ -1,6 +1,5 @@
 import 'package:alba/routing.dart';
 import 'package:flutter/material.dart' hide Router;
-import 'package:flutter/widgets.dart' hide Router;
 import 'package:flutter_test/flutter_test.dart';
 
 RouterRoot createRouter(WidgetBuilder homeScreenBuilder) {
@@ -57,9 +56,7 @@ void main() {
 
       expect(pushActiveRoute!.path, '/screen-1');
 
-      tester
-          .state<NavigatorState>(find.byType(Navigator))
-          .pop('screen was popped');
+      tester.state<RouterState>(find.byType(Router)).pop('screen was popped');
       await tester.pumpAndSettle();
 
       expect(popActiveRoute!.path, '/screen-1');
@@ -94,9 +91,7 @@ void main() {
 
       expect(pushActiveRoute!.path, '/screen-1');
 
-      tester
-          .state<NavigatorState>(find.byType(Navigator))
-          .pop('screen was popped');
+      tester.state<RouterState>(find.byType(Router)).pop('screen was popped');
       await tester.pumpAndSettle();
 
       expect(popActiveRoute!.path, '/screen-1');
@@ -150,33 +145,25 @@ void main() {
 
       expect(pushActiveRoute!.path, '/screen-4');
 
-      tester
-          .state<NavigatorState>(find.byType(Navigator))
-          .pop('screen 4 was popped');
+      tester.state<RouterState>(find.byType(Router)).pop('screen 4 was popped');
       await tester.pumpAndSettle();
 
       expect(popActiveRoute!.path, '/screen-4');
       expect(popResult, 'screen 4 was popped');
 
-      tester
-          .state<NavigatorState>(find.byType(Navigator))
-          .pop('screen 3 was popped');
+      tester.state<RouterState>(find.byType(Router)).pop('screen 3 was popped');
       await tester.pumpAndSettle();
 
       expect(popActiveRoute!.path, '/screen-3');
       expect(popResult, 'screen 3 was popped');
 
-      tester
-          .state<NavigatorState>(find.byType(Navigator))
-          .pop('screen 2 was popped');
+      tester.state<RouterState>(find.byType(Router)).pop('screen 2 was popped');
       await tester.pumpAndSettle();
 
       expect(popActiveRoute!.path, '/screen-2');
       expect(popResult, 'screen 2 was popped');
 
-      tester
-          .state<NavigatorState>(find.byType(Navigator))
-          .pop('screen 1 was popped');
+      tester.state<RouterState>(find.byType(Router)).pop('screen 1 was popped');
       await tester.pumpAndSettle();
 
       expect(popActiveRoute!.path, '/screen-1');

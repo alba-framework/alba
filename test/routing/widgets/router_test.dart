@@ -12,8 +12,17 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class MyOtherScreen extends StatelessWidget {
-  const MyOtherScreen({Key? key}) : super(key: key);
+class FirstScreen extends StatelessWidget {
+  const FirstScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
+class SecondScreen extends StatelessWidget {
+  const SecondScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +45,9 @@ RouterRoot createRouter({GlobalKey<NavigatorState>? navigatorKey}) {
       routeDefinitions: [
         RouteDefinition('/', (context, parameters) => const HomeScreen()),
         RouteDefinition(
-            '/my-other-screen', (context, parameters) => const MyOtherScreen()),
+            '/first-screen', (context, parameters) => const FirstScreen()),
+        RouteDefinition(
+            '/second-screen', (context, parameters) => const FirstScreen()),
         RouteDefinition(
             '/not-found', (context, parameters) => const NotFoundScreen()),
       ],
@@ -67,10 +78,10 @@ void main() {
     testWidgets('pushes a route', (WidgetTester tester) async {
       await tester.pumpWidget(createRouter());
 
-      tester.state<RouterState>(find.byType(Router)).push('/my-other-screen');
+      tester.state<RouterState>(find.byType(Router)).push('/first-screen');
       await tester.pumpAndSettle();
 
-      expect(find.byType(MyOtherScreen), findsOneWidget);
+      expect(find.byType(FirstScreen), findsOneWidget);
     });
 
     testWidgets('pushes a not found route', (WidgetTester tester) async {
@@ -92,28 +103,60 @@ void main() {
     testWidgets('pops a route', (WidgetTester tester) async {
       await tester.pumpWidget(createRouter());
 
-      tester.state<RouterState>(find.byType(Router)).push('/my-other-screen');
+      tester.state<RouterState>(find.byType(Router)).push('/first-screen');
       await tester.pumpAndSettle();
 
-      tester.state<NavigatorState>(find.byType(Navigator)).pop('result');
+      tester.state<RouterState>(find.byType(Router)).pop();
       await tester.pumpAndSettle();
 
-      expect(find.byType(MyOtherScreen), findsNothing);
+      expect(find.byType(FirstScreen), findsNothing);
+    });
+
+    testWidgets('pops a route (using Navigator)', (WidgetTester tester) async {
+      await tester.pumpWidget(createRouter());
+
+      tester.state<RouterState>(find.byType(Router)).push('/first-screen');
+      await tester.pumpAndSettle();
+
+      tester.state<NavigatorState>(find.byType(Navigator)).pop();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FirstScreen), findsNothing);
+    });
+
+    testWidgets('removes a route', (WidgetTester tester) async {
+      await tester.pumpWidget(createRouter());
+
+      tester.state<RouterState>(find.byType(Router)).push('/first-screen');
+      await tester.pumpAndSettle();
+
+      tester.state<RouterState>(find.byType(Router)).push('/second-screen');
+      await tester.pumpAndSettle();
+
+      tester
+          .state<RouterState>(find.byType(Router))
+          .removeRoute('/first-screen');
+      await tester.pumpAndSettle();
+
+      tester.state<RouterState>(find.byType(Router)).pop();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FirstScreen), findsNothing);
     });
 
     testWidgets('restores routes', (WidgetTester tester) async {
       await tester.pumpWidget(createRouter());
 
-      tester.state<RouterState>(find.byType(Router)).push('/my-other-screen');
+      tester.state<RouterState>(find.byType(Router)).push('/first-screen');
       await tester.pumpAndSettle();
 
-      expect(find.byType(MyOtherScreen), findsOneWidget);
+      expect(find.byType(FirstScreen), findsOneWidget);
 
       await tester.restartAndRestore();
 
-      expect(find.byType(MyOtherScreen), findsOneWidget);
+      expect(find.byType(FirstScreen), findsOneWidget);
 
-      tester.state<NavigatorState>(find.byType(Navigator)).pop('result');
+      tester.state<RouterState>(find.byType(Router)).pop();
       await tester.pumpAndSettle();
 
       expect(find.byType(HomeScreen), findsOneWidget);

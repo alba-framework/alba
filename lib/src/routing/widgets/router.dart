@@ -95,7 +95,7 @@ class RouterState extends State<Router> with RestorationMixin {
           return false;
         }
 
-        widget._albaRouter.pop(route, result);
+        widget._albaRouter.popByRoute(route, result);
         _syncRestorablePages();
         widget._notifyDelegate();
 
@@ -104,18 +104,31 @@ class RouterState extends State<Router> with RestorationMixin {
     );
   }
 
-  void _syncRestorablePages() {
-    _restorablePages.value = widget._albaRouter.activeRoutes
-        .map((activePage) =>
-            RestorablePageInformation.fromActivePage(activePage))
-        .toList();
-  }
-
   /// Pushes a new route.
   void push(String path, {String? id}) {
     widget._albaRouter.push(path, id);
     _syncRestorablePages();
     widget._notifyDelegate();
+  }
+
+  /// Pops the current route.
+  void pop<T extends Object?>([T? result]) {
+    widget._albaRouter.pop(result);
+    _syncRestorablePages();
+    widget._notifyDelegate();
+  }
+
+  /// Removes a route.
+  void removeRoute(String path) {
+    widget._albaRouter.removeRoute(path);
+    _syncRestorablePages();
+  }
+
+  void _syncRestorablePages() {
+    _restorablePages.value = widget._albaRouter.activeRoutes
+        .map((activePage) =>
+            RestorablePageInformation.fromActivePage(activePage))
+        .toList();
   }
 
   /// Router event stream.

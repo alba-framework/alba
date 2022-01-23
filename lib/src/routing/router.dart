@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -64,22 +65,25 @@ class AlbaRouter {
     var activeRoute =
         ActiveRoute(routeDefinition, path, _nextRouteIndex, id: id);
 
-    activeRoutes.add(activeRoute);
-
-    WidgetsBinding.instance
-        ?.addPostFrameCallback((_) => _notifyPush(activeRoute));
+    _push(activeRoute);
   }
 
-  /// Pops a route.
-  void pop(Route route, dynamic result) {
-    var activeRoute = _findActiveRoute(route);
+  /// Pops the top-most route.
+  void pop<T extends Object?>([T? result]) {
+    var activeRoute = activeRoutes.isEmpty ? null : activeRoutes.last;
+    _pop(activeRoute!, result);
+  }
 
-    if (null != activeRoute) {
-      activeRoutes.remove(activeRoute);
+  /// Pops a specific route by `Route`.
+  void popByRoute<T extends Object?>(Route route, [T? result]) {
+    var activeRoute = _findActiveRouteByRoute(route);
+    _pop(activeRoute!, result);
+  }
 
-      WidgetsBinding.instance
-          ?.addPostFrameCallback((_) => _notifyPop(activeRoute, result));
-    }
+  /// Removes a route by path.
+  void removeRoute(String path) {
+    var activeRoute = _findActiveRouteByPath(path);
+    _remove(activeRoute!);
   }
 
   /// Finds a route definition for a path.
@@ -98,7 +102,7 @@ class AlbaRouter {
     return routeDefinition;
   }
 
-  ActiveRoute? _findActiveRoute(Route route) {
+  ActiveRoute? _findActiveRouteByRoute(Route route) {
     for (var i = activeRoutes.length - 1; i >= 0; i--) {
       var activeRoute = activeRoutes[i];
 
@@ -110,13 +114,54 @@ class AlbaRouter {
     return null;
   }
 
+  ActiveRoute? _findActiveRouteByPath(String path) {
+    for (var i = activeRoutes.length - 1; i >= 0; i--) {
+      var activeRoute = activeRoutes[i];
+
+      if (activeRoute.path == path) {
+        return activeRoute;
+      }
+    }
+
+    return null;
+  }
+
+  void _push(ActiveRoute? activeRoute) {
+    assert(null != activeRoute);
+
+    activeRoutes.add(activeRoute!);
+
+    WidgetsBinding.instance
+        ?.addPostFrameCallback((_) => _notifyPush(activeRoute));
+  }
+
+  void _pop<T extends Object?>(ActiveRoute? activeRoute, T? result) {
+    assert(null != activeRoute);
+
+    if (1 == activeRoutes.length) {
+      SystemNavigator.pop();
+      return;
+    }
+
+    activeRoutes.remove(activeRoute);
+
+    WidgetsBinding.instance
+        ?.addPostFrameCallback((_) => _notifyPop(activeRoute!, result));
+  }
+
+  void _remove<T extends Object?>(ActiveRoute? activeRoute) {
+    assert(null != activeRoute);
+
+    activeRoutes.remove(activeRoute);
+  }
+
   /// Notifies a push event.
   void _notifyPush(ActiveRoute activeRoute) {
     _routerEventsController.sink.add(PushEvent(activeRoute));
   }
 
   /// Notifies a pop event.
-  void _notifyPop(ActiveRoute activeRoute, dynamic result) {
+  void _notifyPop<T extends Object?>(ActiveRoute activeRoute, T result) {
     _routerEventsController.sink.add(PopEvent(activeRoute, result));
   }
 
@@ -147,9 +192,9 @@ class RouterEvent {
 }
 
 /// A router pop event.
-class PopEvent extends RouterEvent {
+class PopEvent<T extends Object?> extends RouterEvent {
   /// The page result.
-  final dynamic result;
+  final T result;
 
   /// Creates a [PopEvent].
   PopEvent(ActiveRoute activeRoute, this.result) : super(activeRoute);
