@@ -1,5 +1,4 @@
 import 'package:alba/framework.dart';
-import 'package:alba/src/framework/error_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
