@@ -1,3 +1,8 @@
+## 0.0.6
+
+* Update links.
+* Add documentation link.
+
 ## 0.0.5
 
 * Update links.
