@@ -4,21 +4,6 @@
 
 > Alba is a framework that boosts Flutter project development.
 
-## Installation
+## Learn
 
-```sh
-flutter create -t app my_project
-cd my_project
-flutter pub add alba
-flutter pub run alba init
-```
-
-## Features
-
-- Routing
-- Service locator
-- Service providers
-- Environment management
-- Error handler
-
-And more soon...
+Check out [Documentation](https://alba-framework.github.io/) to learn more.
