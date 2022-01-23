@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Update links.
+
 ## 0.0.4
 
 * Fix init command. Dotfiles weren't created.
