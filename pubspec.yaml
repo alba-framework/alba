@@ -1,9 +1,9 @@
 name: alba
 description: Alba is a framework that boosts Flutter project development.
 version: 0.0.4
-homepage: https://github.com/mariomka/alba
-repository: https://github.com/mariomka/alba
-issue_tracker: https://github.com/mariomka/alba/issues
+homepage: https://github.com/AlbaFramework/alba
+repository: https://github.com/AlbaFramework/alba
+issue_tracker: https://github.com/AlbaFramework/alba/issues
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
