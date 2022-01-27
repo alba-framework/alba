@@ -1,3 +1,10 @@
+## 0.0.7
+
+* Router middleware.
+* Add `removeAllAndPush` router method.
+* Key value store.
+* Make router initial path dynamic.
+
 ## 0.0.6
 
 * Update links.
