@@ -29,13 +29,15 @@ class AlbaRouter {
   /// Creates [AlbaRouter].
   AlbaRouter({
     required this.routeDefinitions,
-    String notFoundPath = '/not-found',
-    String initialPath = '/',
+    required String notFoundPath,
+    required String Function() initialPath,
   }) {
+    var _initialPath = initialPath();
+
     activeRoutes = [
       ActiveRoute(
-        _findRouteDefinition(initialPath),
-        initialPath,
+        _findRouteDefinition(_initialPath),
+        _initialPath,
         _nextRouteIndex,
         id: 'initial',
       )

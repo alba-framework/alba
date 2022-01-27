@@ -20,7 +20,7 @@ class RouterRootConfiguration {
   final GlobalKey<NavigatorState>? navigatorKey;
 
   /// The initial path when there isn't any page.
-  final String initialPath;
+  final String Function() initialPath;
 
   /// The not found path.
   final String notFoundPath;
@@ -28,10 +28,11 @@ class RouterRootConfiguration {
   /// Creates a [RouterRootConfiguration].
   RouterRootConfiguration({
     required this.routeDefinitions,
-    this.initialPath = '/',
+    String Function()? initialPath,
     this.notFoundPath = '/not-found',
     GlobalKey<NavigatorState>? navigatorKey,
-  }) : navigatorKey = navigatorKey ?? GlobalKey<NavigatorState>();
+  })  : initialPath = initialPath ?? (() => '/'),
+        navigatorKey = navigatorKey ?? GlobalKey<NavigatorState>();
 }
 
 /// A root router widget.

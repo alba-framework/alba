@@ -52,7 +52,8 @@ class AbortMiddleware extends Middleware {
   }
 }
 
-RouterRoot createRouter({GlobalKey<NavigatorState>? navigatorKey}) {
+RouterRoot createRouter(
+    {String Function()? initialPath, GlobalKey<NavigatorState>? navigatorKey}) {
   return RouterRoot(
     configuration: RouterRootConfiguration(
       routeDefinitions: [
@@ -74,6 +75,7 @@ RouterRoot createRouter({GlobalKey<NavigatorState>? navigatorKey}) {
         RouteDefinition(
             '/not-found', (context, parameters) => const NotFoundScreen()),
       ],
+      initialPath: initialPath,
       navigatorKey: navigatorKey,
     ),
     builder: (
@@ -96,6 +98,12 @@ void main() {
       await tester.pumpWidget(createRouter());
 
       expect(find.byType(HomeScreen), findsOneWidget);
+    });
+
+    testWidgets('shows the initial custom route', (WidgetTester tester) async {
+      await tester.pumpWidget(createRouter(initialPath: () => '/first-screen'));
+
+      expect(find.byType(FirstScreen), findsOneWidget);
     });
 
     testWidgets('pushes a route', (WidgetTester tester) async {
