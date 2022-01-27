@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart' hide Router;
 import 'package:path_to_regexp/path_to_regexp.dart';
 
 import '../../routing.dart';
+import '../framework/pipeline.dart';
 
 /// A signature for a function that creates a route [Widget].
 typedef RouteWidgetBuilder = Widget Function(
@@ -15,6 +16,9 @@ typedef RouterPageBuilder = Page Function(
   BuildContext context,
   ActiveRoute activeRoute,
 );
+
+/// A route middleware
+typedef Middleware = PipelineHandler<RouteDefinition>;
 
 String _addTrailingSlash(String path) {
   if ('/' == path[path.length - 1]) {
@@ -36,6 +40,8 @@ class RouteDefinition {
   /// The builder.
   final RouterPageBuilder pageBuilder;
 
+  final List<Middleware> Function()? _middlewaresBuilder;
+
   /// The generated regex to test if a path match.
   late final RegExp _pathRegex;
 
@@ -49,7 +55,9 @@ class RouteDefinition {
     String path,
     this.widgetBuilder, {
     this.pageBuilder = defaultPageBuilder,
-  }) : _path = _addTrailingSlash(path) {
+    List<Middleware> Function()? middlewares,
+  })  : _path = _addTrailingSlash(path),
+        _middlewaresBuilder = middlewares {
     _parametersNames = [];
     _pathRegex = pathToRegExp(
       _path,
@@ -57,6 +65,10 @@ class RouteDefinition {
       caseSensitive: false,
     );
   }
+
+  /// The route middlewares.
+  List<Middleware> get middlewares =>
+      _middlewaresBuilder != null ? _middlewaresBuilder!() : [];
 
   /// Tests if a path match.
   bool match(String path) {

@@ -38,6 +38,20 @@ class NotFoundScreen extends StatelessWidget {
   }
 }
 
+class PassMiddleware extends Middleware {
+  @override
+  void handle(RouteDefinition subject, next) {
+    next(subject);
+  }
+}
+
+class AbortMiddleware extends Middleware {
+  @override
+  void handle(RouteDefinition subject, next) {
+    // This middleware doesn't call next.
+  }
+}
+
 RouterRoot createRouter({GlobalKey<NavigatorState>? navigatorKey}) {
   return RouterRoot(
     configuration: RouterRootConfiguration(
@@ -47,6 +61,16 @@ RouterRoot createRouter({GlobalKey<NavigatorState>? navigatorKey}) {
             '/first-screen', (context, parameters) => const FirstScreen()),
         RouteDefinition(
             '/second-screen', (context, parameters) => const FirstScreen()),
+        RouteDefinition(
+          '/pass-middleware',
+          (context, parameters) => const FirstScreen(),
+          middlewares: () => [PassMiddleware()],
+        ),
+        RouteDefinition(
+          '/abort-middleware',
+          (context, parameters) => const FirstScreen(),
+          middlewares: () => [AbortMiddleware()],
+        ),
         RouteDefinition(
             '/not-found', (context, parameters) => const NotFoundScreen()),
       ],
@@ -83,13 +107,33 @@ void main() {
       expect(find.byType(FirstScreen), findsOneWidget);
     });
 
-    testWidgets('pushes a not found route', (WidgetTester tester) async {
+    testWidgets('pushes an undefined route', (WidgetTester tester) async {
       await tester.pumpWidget(createRouter());
 
       tester.state<RouterState>(find.byType(Router)).push('/non-exist-route');
       await tester.pumpAndSettle();
 
       expect(find.byType(NotFoundScreen), findsOneWidget);
+    });
+
+    testWidgets('pushes a route with a middleware',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(createRouter());
+
+      tester.state<RouterState>(find.byType(Router)).push('/pass-middleware');
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FirstScreen), findsOneWidget);
+    });
+
+    testWidgets('pushes a route with a middleware that abort the navigation',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(createRouter());
+
+      tester.state<RouterState>(find.byType(Router)).push('/abort-middleware');
+      await tester.pumpAndSettle();
+
+      expect(find.byType(HomeScreen), findsOneWidget);
     });
 
     testWidgets('sets the navigator key', (WidgetTester tester) async {

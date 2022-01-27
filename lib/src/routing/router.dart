@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../framework/error.dart';
+import '../framework/pipeline.dart';
 import 'restoration.dart';
 import 'route.dart';
 
@@ -60,12 +61,15 @@ class AlbaRouter {
   /// Pushes a new page by path.
   ///
   /// [id] is used to match listeners.
+  ///
+  /// Process route middlewares before push.
   void push(String path, String? id) {
     var routeDefinition = _findRouteDefinition(path);
-    var activeRoute =
-        ActiveRoute(routeDefinition, path, _nextRouteIndex, id: id);
 
-    _push(activeRoute);
+    _proccessMiddlewares(
+        routeDefinition,
+        (RouteDefinition routeDefinition) =>
+            _push(ActiveRoute(routeDefinition, path, _nextRouteIndex, id: id)));
   }
 
   /// Pops the top-most route.
@@ -124,6 +128,17 @@ class AlbaRouter {
     }
 
     return null;
+  }
+
+  void _proccessMiddlewares(
+    RouteDefinition routeDefinition,
+    void Function(RouteDefinition routeDefinition) then,
+  ) {
+    pipeline(
+      routeDefinition,
+      routeDefinition.middlewares,
+      then,
+    );
   }
 
   void _push(ActiveRoute? activeRoute) {
