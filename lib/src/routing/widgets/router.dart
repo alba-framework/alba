@@ -111,6 +111,13 @@ class RouterState extends State<Router> with RestorationMixin {
     widget._notifyDelegate();
   }
 
+  /// Removes all and pushes a new route.
+  void removeAllAndPush(String path, {String? id}) {
+    widget._albaRouter.removeAllAndPush(path, id);
+    _syncRestorablePages();
+    widget._notifyDelegate();
+  }
+
   /// Pops the current route.
   void pop<T extends Object?>([T? result]) {
     widget._albaRouter.pop(result);

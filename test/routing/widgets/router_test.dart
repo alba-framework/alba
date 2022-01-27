@@ -204,5 +204,21 @@ void main() {
 
       expect(find.byType(HomeScreen), findsOneWidget);
     });
+
+    testWidgets('removes all routes and push a new one',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(createRouter());
+
+      tester.state<RouterState>(find.byType(Router)).push('/first-screen');
+      await tester.pumpAndSettle();
+
+      tester.state<RouterState>(find.byType(Router)).push('/second-screen');
+      await tester.pumpAndSettle();
+
+      tester.state<RouterState>(find.byType(Router)).removeAllAndPush('/');
+      await tester.pumpAndSettle();
+
+      expect(find.byType(HomeScreen), findsOneWidget);
+    });
   });
 }

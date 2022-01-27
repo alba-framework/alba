@@ -67,9 +67,27 @@ class AlbaRouter {
     var routeDefinition = _findRouteDefinition(path);
 
     _proccessMiddlewares(
-        routeDefinition,
-        (RouteDefinition routeDefinition) =>
-            _push(ActiveRoute(routeDefinition, path, _nextRouteIndex, id: id)));
+      routeDefinition,
+      (RouteDefinition routeDefinition) =>
+          _push(ActiveRoute(routeDefinition, path, _nextRouteIndex, id: id)),
+    );
+  }
+
+  /// Removes all routes then pushes a new page by path.
+  ///
+  /// [id] is used to match listeners.
+  ///
+  /// Process route middlewares before remove.
+  void removeAllAndPush(String path, String? id) {
+    var routeDefinition = _findRouteDefinition(path);
+
+    _proccessMiddlewares(
+      routeDefinition,
+      (RouteDefinition routeDefinition) {
+        activeRoutes = [];
+        _push(ActiveRoute(routeDefinition, path, _nextRouteIndex, id: id));
+      },
+    );
   }
 
   /// Pops the top-most route.
