@@ -19,6 +19,7 @@ dependencies:
   path: ^1.8.0
   path_to_regexp: ^0.4.0
   rxdart: ^0.27.2
+  shared_preferences: ^2.0.12
   yaml: ^3.1.0
 
 dev_dependencies:
