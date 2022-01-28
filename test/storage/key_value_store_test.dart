@@ -17,7 +17,7 @@ void main() {
 
     test('retrieves an int value', () async {
       var sharedPreferences =
-          await prepareSharedPreferences(<String, Object>{'my_int': 223});
+          await prepareSharedPreferences(<String, Object>{'alba_my_int': 223});
       var keyValueStore = KeyValueStore(sharedPreferences);
 
       int value = await keyValueStore.get('my_int');
@@ -27,7 +27,7 @@ void main() {
 
     test('retrieves an double value', () async {
       var sharedPreferences = await prepareSharedPreferences(
-          <String, Object>{'my_double': 223.9992});
+          <String, Object>{'alba_my_double': 223.9992});
       var keyValueStore = KeyValueStore(sharedPreferences);
 
       double value = await keyValueStore.get('my_double');
@@ -36,8 +36,8 @@ void main() {
     });
 
     test('retrieves an bool value', () async {
-      var sharedPreferences =
-          await prepareSharedPreferences(<String, Object>{'my_bool': true});
+      var sharedPreferences = await prepareSharedPreferences(
+          <String, Object>{'alba_my_bool': true});
       var keyValueStore = KeyValueStore(sharedPreferences);
 
       bool value = await keyValueStore.get('my_bool');
@@ -47,7 +47,8 @@ void main() {
 
     test('retrieves an String value', () async {
       var sharedPreferences = await prepareSharedPreferences(<String, Object>{
-        'my_string': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+        'alba_my_string':
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
       });
       var keyValueStore = KeyValueStore(sharedPreferences);
 
