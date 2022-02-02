@@ -1,3 +1,8 @@
+## 0.0.8
+
+* Make app `navigatorContext` nullable.
+* Add `router` app getter. 
+
 ## 0.0.7
 
 * Router middleware.
