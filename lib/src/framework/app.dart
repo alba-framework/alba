@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart' hide Router;
 import 'package:get_it/get_it.dart';
 
 import '../../routing.dart';
@@ -109,8 +109,14 @@ class App {
   ///
   /// Useful when context is necessary out of a widget.
   /// Use at your own risk.
-  BuildContext get navigatorContext =>
-      routerRootConfiguration!.navigatorKey!.currentState!.context;
+  BuildContext? get navigatorContext =>
+      routerRootConfiguration?.navigatorKey?.currentState?.context;
+
+  /// The state of root router.
+  ///
+  /// Useful to navigate when the context isn't available.
+  RouterState? get router =>
+      navigatorContext != null ? Router.of(navigatorContext!) : null;
 
   /// The root router delegate.
   AlbaRouterDelegate? get pageRouterDelegate => _pageRouterDelegate;

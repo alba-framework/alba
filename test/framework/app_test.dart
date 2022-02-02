@@ -118,5 +118,19 @@ void main() {
 
       expect(app.navigatorContext, isA<BuildContext>());
     });
+
+    testWidgets('gets router', (WidgetTester tester) async {
+      var app = App.create(
+        routerRootConfiguration: RouterRootConfiguration(routeDefinitions: [
+          RouteDefinition('/', (context, parameters) => Container()),
+          RouteDefinition('/not-found', (context, parameters) => Container()),
+        ]),
+        widget: const AppWithRouterTest(),
+      );
+      await app.run();
+      await tester.pumpAndSettle();
+
+      expect(app.router, isA<RouterState>());
+    });
   });
 }
