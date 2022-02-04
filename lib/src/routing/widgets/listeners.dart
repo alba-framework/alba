@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/widgets.dart' hide Router;
 
 import '../../../routing.dart';
-import '../router.dart';
 
 /// A push event callback.
 typedef PushEventCallback = void Function(ActiveRoute activeRoute);
