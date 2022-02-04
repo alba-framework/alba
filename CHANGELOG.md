@@ -1,3 +1,8 @@
+## 0.0.9
+
+* Add `currentPath` getter in router widget.
+* Export router (`AlbaRouter` and more).
+
 ## 0.0.8
 
 * Make app `navigatorContext` nullable.
