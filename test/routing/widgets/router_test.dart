@@ -228,5 +228,17 @@ void main() {
 
       expect(find.byType(HomeScreen), findsOneWidget);
     });
+
+    testWidgets('gets the current path', (WidgetTester tester) async {
+      await tester.pumpWidget(createRouter());
+
+      tester.state<RouterState>(find.byType(Router)).push('/first-screen');
+      await tester.pumpAndSettle();
+
+      var currentPath =
+          tester.state<RouterState>(find.byType(Router)).currentPath;
+
+      expect(currentPath, '/first-screen');
+    });
   });
 }

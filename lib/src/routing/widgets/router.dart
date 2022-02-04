@@ -81,6 +81,11 @@ class RouterState extends State<Router> with RestorationMixin {
     }
   }
 
+  /// The current path.
+  String get currentPath {
+    return widget._albaRouter.activeRoutes.last.path;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Navigator(
