@@ -1,3 +1,10 @@
+## 0.0.10
+
+* Add `App.bootTesting()` method.
+* Add 'testLoad' method.
+* Clear service locator on clear app
+* Disable error handler in tests
+
 ## 0.0.9
 
 * Add `currentPath` getter in router widget.
