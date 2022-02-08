@@ -52,8 +52,34 @@ class AbortMiddleware extends Middleware {
   }
 }
 
-RouterRoot createRouter(
-    {String Function()? initialPath, GlobalKey<NavigatorState>? navigatorKey}) {
+class LogObserver extends NavigatorObserver {
+  String log = '';
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    log += 'push: ${_extractPath(route)}\n';
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    log += 'replace: ${_extractPath(newRoute!)}\n';
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    log += 'pop: ${_extractPath(previousRoute!)}\n';
+  }
+
+  String? _extractPath(Route<dynamic> route) {
+    return route.settings.name?.replaceFirst(RegExp('^[^/]+'), '');
+  }
+}
+
+RouterRoot createRouter({
+  String Function()? initialPath,
+  GlobalKey<NavigatorState>? navigatorKey,
+  List<NavigatorObserver> Function()? observers,
+}) {
   return RouterRoot(
     configuration: RouterRootConfiguration(
       routeDefinitions: [
@@ -77,6 +103,7 @@ RouterRoot createRouter(
       ],
       initialPath: initialPath,
       navigatorKey: navigatorKey,
+      observers: observers,
     ),
     builder: (
       BuildContext context,
@@ -239,6 +266,34 @@ void main() {
           tester.state<RouterState>(find.byType(Router)).currentPath;
 
       expect(currentPath, '/first-screen');
+    });
+
+    testWidgets('observe route changes', (WidgetTester tester) async {
+      var logObserver = LogObserver();
+      await tester.pumpWidget(createRouter(observers: () => [logObserver]));
+
+      tester.state<RouterState>(find.byType(Router)).push('/first-screen');
+      await tester.pumpAndSettle();
+
+      tester.state<RouterState>(find.byType(Router)).push('/second-screen');
+      await tester.pumpAndSettle();
+
+      tester.state<RouterState>(find.byType(Router)).pop();
+      await tester.pumpAndSettle();
+
+      tester.state<RouterState>(find.byType(Router)).pop();
+      await tester.pumpAndSettle();
+
+      expect(
+        logObserver.log,
+        '''
+push: /
+push: /first-screen
+push: /second-screen
+pop: /first-screen
+pop: /
+''',
+      );
     });
   });
 }

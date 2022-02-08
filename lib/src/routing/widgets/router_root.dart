@@ -19,6 +19,9 @@ class RouterRootConfiguration {
   /// The key used for [Navigator].
   final GlobalKey<NavigatorState>? navigatorKey;
 
+  /// A list of observers.
+  final List<NavigatorObserver> Function()? observers;
+
   /// The initial path when there isn't any page.
   final String Function() initialPath;
 
@@ -31,6 +34,7 @@ class RouterRootConfiguration {
     String Function()? initialPath,
     this.notFoundPath = '/not-found',
     GlobalKey<NavigatorState>? navigatorKey,
+    this.observers,
   })  : initialPath = initialPath ?? (() => '/'),
         navigatorKey = navigatorKey ?? GlobalKey<NavigatorState>();
 }
@@ -74,6 +78,7 @@ class _RouterRootState extends State<RouterRoot> {
     _pageRouterDelegate = AlbaRouterDelegate(
       routerState: _routerState,
       navigatorKey: widget.configuration.navigatorKey,
+      observers: widget.configuration.observers,
     );
   }
 
@@ -100,12 +105,16 @@ class AlbaRouterDelegate extends RouterDelegate<String>
 
   final GlobalKey<NavigatorState>? _navigatorKey;
 
+  final List<NavigatorObserver> Function()? _observers;
+
   /// Creates a [AlbaRouterDelegate]
   AlbaRouterDelegate({
     required AlbaRouter routerState,
-    required GlobalKey<NavigatorState>? navigatorKey,
+    GlobalKey<NavigatorState>? navigatorKey,
+    List<NavigatorObserver> Function()? observers,
   })  : _routerState = routerState,
-        _navigatorKey = navigatorKey;
+        _navigatorKey = navigatorKey,
+        _observers = observers;
 
   @override
   GlobalKey<NavigatorState>? get navigatorKey => _navigatorKey;
@@ -132,7 +141,8 @@ class AlbaRouterDelegate extends RouterDelegate<String>
   @override
   Widget build(BuildContext context) {
     return Router(
-      navigatorKey: navigatorKey,
+      navigatorKey: _navigatorKey,
+      observers: _observers,
       albaRouter: _routerState,
       notifyDelegate: () => notifyListeners(),
     );

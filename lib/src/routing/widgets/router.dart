@@ -18,13 +18,18 @@ class Router extends StatefulWidget {
   /// The key used for [Navigator].
   final GlobalKey<NavigatorState>? _navigatorKey;
 
+  /// A list of observers for this [Router].
+  final List<NavigatorObserver> Function()? _observers;
+
   /// Creates a [Router].
   const Router({
     required AlbaRouter albaRouter,
     required void Function() notifyDelegate,
     GlobalKey<NavigatorState>? navigatorKey,
+    List<NavigatorObserver> Function()? observers,
     Key? key,
   })  : _navigatorKey = navigatorKey,
+        _observers = observers,
         _albaRouter = albaRouter,
         _notifyDelegate = notifyDelegate,
         super(key: key);
@@ -91,6 +96,7 @@ class RouterState extends State<Router> with RestorationMixin {
     return Navigator(
       restorationScopeId: 'navigator',
       key: widget._navigatorKey,
+      observers: widget._observers != null ? widget._observers!() : [],
       pages: [
         for (var activePage in widget._albaRouter.activeRoutes)
           activePage.buildPage(context)
