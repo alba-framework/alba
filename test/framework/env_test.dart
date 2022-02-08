@@ -1,15 +1,17 @@
 import 'package:alba/src/framework/env.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-var envFile = 'STRING_VARIABLE=hello\n'
-    'STRING_WITH_SPACES_VARIABLE=hello world\n'
-    'TRUE_VARIABLE=true\n'
-    'FALSE_VARIABLE=false\n';
+var environment = '''
+STRING_VARIABLE=hello
+STRING_WITH_SPACES_VARIABLE=hello world
+TRUE_VARIABLE=true
+FALSE_VARIABLE=false
+''';
 
 void main() {
   group('EnvironmentManager', () {
     setUp(() {
-      EnvironmentManager().testLoad(envFile);
+      testLoad(environment);
     });
 
     test('is a singleton', () {
@@ -46,7 +48,7 @@ void main() {
 
   group('env()', () {
     setUp(() {
-      EnvironmentManager().testLoad(envFile);
+      testLoad(environment);
     });
 
     test('gets a variable', () {

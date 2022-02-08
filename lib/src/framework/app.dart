@@ -30,8 +30,6 @@ App app() {
 class App {
   static App? _instance;
 
-  static bool _isTesting = false;
-
   /// The service locator.
   final ServiceLocator serviceLocator = ServiceLocator.instance;
 
@@ -56,6 +54,10 @@ class App {
 
   /// The root router information parser.
   AlbaRouteInformationParser? _pageRouteInformationParser;
+
+  static bool _isTesting = false;
+
+  static Future<void> Function(App)? _bootTesting;
 
   /// Creates an [App].
   App._({
@@ -94,13 +96,21 @@ class App {
     _isTesting = true;
   }
 
+  /// Define a closure to be run on boot when test mode is enabled.
+  @visibleForTesting
+  static void bootTesting(Future<void> Function(App) bootTesting) {
+    _bootTesting = bootTesting;
+  }
+
   /// Clears the app.
   ///
   /// It is useful for testing.
   @visibleForTesting
-  static void clear() {
+  static Future<void> clear() async {
     _instance = null;
     _isTesting = false;
+    _bootTesting = null;
+    await ServiceLocator.instance.reset();
   }
 
   /// The navigator context.
@@ -129,6 +139,12 @@ class App {
   Future<void> run() async {
     await _boot();
 
+    // Not run in a guarded zone when testing.
+    if (_isTesting) {
+      runApp(_createChild());
+      return;
+    }
+
     ErrorHandler(errorListeners).run(() => runApp(_createChild()));
   }
 
@@ -136,8 +152,12 @@ class App {
   Future<void> _boot() async {
     await _loadEnv();
 
-    for (var boot in appProviders ?? []) {
-      await boot.boot(serviceLocator);
+    for (var appProvider in appProviders ?? []) {
+      await appProvider.boot(serviceLocator);
+    }
+
+    if (_isTesting && _bootTesting != null) {
+      await _bootTesting!(this);
     }
   }
 

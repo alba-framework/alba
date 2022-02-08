@@ -74,6 +74,19 @@ void main() {
       expect(spy.called, isTrue);
     });
 
+    testWidgets('runs boot testing', (WidgetTester tester) async {
+      var spy = Spy();
+      App.bootTesting((app) async {
+        spy();
+      });
+      var app = App.create(
+        widget: Container(),
+      );
+      await app.run();
+
+      expect(spy.called, isTrue);
+    });
+
     testWidgets('runs app', (WidgetTester tester) async {
       var key = UniqueKey();
       var app = App.create(

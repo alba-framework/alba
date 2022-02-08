@@ -7,6 +7,12 @@ import 'package:meta/meta.dart';
 dynamic env(String key, {dynamic defaultValue}) =>
     EnvironmentManager().get(key);
 
+/// Load environment for testing.
+@visibleForTesting
+void testLoad(String environment) {
+  EnvironmentManager().testLoad(environment);
+}
+
 /// An environment manager.
 ///
 /// It loads and gives environment variables.
