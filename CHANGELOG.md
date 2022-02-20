@@ -1,3 +1,7 @@
+## 0.0.11
+
+* Avoid pages rebuilding.
+
 ## 0.0.10
 
 * Add `App.bootTesting()` method.
