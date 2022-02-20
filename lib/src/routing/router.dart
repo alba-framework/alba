@@ -8,7 +8,9 @@ import 'restoration.dart';
 import 'route.dart';
 
 /// A router.
-class AlbaRouter {
+///
+/// Implements [ChangeNotifier] to be able to listen to routes.
+class AlbaRouter extends ChangeNotifier {
   /// The routes index.
   ///
   /// Use [_nextRouteIndex] for getting the next index.
@@ -58,6 +60,7 @@ class AlbaRouter {
   /// Frees memory, closes streams, and so on...
   void clean() {
     _routerEventsController.close();
+    dispose();
   }
 
   /// Pushes a new page by path.
@@ -70,8 +73,10 @@ class AlbaRouter {
 
     _proccessMiddlewares(
       routeDefinition,
-      (RouteDefinition routeDefinition) =>
-          _push(ActiveRoute(routeDefinition, path, _nextRouteIndex, id: id)),
+      (RouteDefinition routeDefinition) {
+        _push(ActiveRoute(routeDefinition, path, _nextRouteIndex, id: id));
+        notifyListeners();
+      },
     );
   }
 
@@ -88,6 +93,7 @@ class AlbaRouter {
       (RouteDefinition routeDefinition) {
         activeRoutes = [];
         _push(ActiveRoute(routeDefinition, path, _nextRouteIndex, id: id));
+        notifyListeners();
       },
     );
   }
@@ -96,18 +102,21 @@ class AlbaRouter {
   void pop<T extends Object?>([T? result]) {
     var activeRoute = activeRoutes.isEmpty ? null : activeRoutes.last;
     _pop(activeRoute!, result);
+    notifyListeners();
   }
 
   /// Pops a specific route by `Route`.
   void popByRoute<T extends Object?>(Route route, [T? result]) {
     var activeRoute = _findActiveRouteByRoute(route);
     _pop(activeRoute!, result);
+    notifyListeners();
   }
 
   /// Removes a route by path.
   void removeRoute(String path) {
     var activeRoute = _findActiveRouteByPath(path);
     _remove(activeRoute!);
+    notifyListeners();
   }
 
   /// Finds a route definition for a path.

@@ -72,8 +72,25 @@ class RouterState extends State<Router> with RestorationMixin {
   final RestorablePageInformationList _restorablePages =
       RestorablePageInformationList();
 
+  final Map<String, Page> _pagesCache = {};
+
+  Map<String, Page> _pages = {};
+
   @override
   String? get restorationId => 'page_router';
+
+  @override
+  void initState() {
+    super.initState();
+    _syncPages();
+
+    widget._albaRouter.addListener(() {
+      setState(() {
+        _syncPages();
+        _syncRestorablePages();
+      });
+    });
+  }
 
   @override
   void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
@@ -83,12 +100,13 @@ class RouterState extends State<Router> with RestorationMixin {
       _syncRestorablePages();
     } else {
       widget._albaRouter.restorePages(_restorablePages);
+      _syncPages();
     }
   }
 
   /// The current path.
   String get currentPath {
-    return widget._albaRouter.activeRoutes.last.path;
+    return widget._albaRouter.currentPath;
   }
 
   @override
@@ -97,17 +115,13 @@ class RouterState extends State<Router> with RestorationMixin {
       restorationScopeId: 'navigator',
       key: widget._navigatorKey,
       observers: widget._observers != null ? widget._observers!() : [],
-      pages: [
-        for (var activePage in widget._albaRouter.activeRoutes)
-          activePage.buildPage(context)
-      ],
+      pages: _pages.values.toList(),
       onPopPage: (route, result) {
         if (!route.didPop(result)) {
           return false;
         }
 
         widget._albaRouter.popByRoute(route, result);
-        _syncRestorablePages();
         widget._notifyDelegate();
 
         return true;
@@ -118,28 +132,38 @@ class RouterState extends State<Router> with RestorationMixin {
   /// Pushes a new route.
   void push(String path, {String? id}) {
     widget._albaRouter.push(path, id);
-    _syncRestorablePages();
     widget._notifyDelegate();
   }
 
   /// Removes all and pushes a new route.
   void removeAllAndPush(String path, {String? id}) {
     widget._albaRouter.removeAllAndPush(path, id);
-    _syncRestorablePages();
     widget._notifyDelegate();
   }
 
   /// Pops the current route.
   void pop<T extends Object?>([T? result]) {
     widget._albaRouter.pop(result);
-    _syncRestorablePages();
     widget._notifyDelegate();
   }
 
   /// Removes a route.
   void removeRoute(String path) {
     widget._albaRouter.removeRoute(path);
-    _syncRestorablePages();
+  }
+
+  void _syncPages() {
+    Map<String, Page> newPages = {};
+
+    for (var activePage in widget._albaRouter.activeRoutes) {
+      if (!_pagesCache.containsKey(activePage.key)) {
+        _pagesCache[activePage.key] = activePage.buildPage(context);
+      }
+
+      newPages[activePage.key] = _pagesCache[activePage.key]!;
+    }
+
+    _pages = newPages;
   }
 
   void _syncRestorablePages() {

@@ -11,6 +11,16 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+class NonConstScreen extends StatelessWidget {
+  // ignore: prefer_const_constructors_in_immutables
+  NonConstScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
 class FirstScreen extends StatelessWidget {
   const FirstScreen({Key? key}) : super(key: key);
 
@@ -98,6 +108,8 @@ RouterRoot createRouter({
           (context, parameters) => const FirstScreen(),
           middlewares: () => [AbortMiddleware()],
         ),
+        RouteDefinition(
+            '/non-const', (context, parameters) => NonConstScreen()),
         RouteDefinition(
             '/not-found', (context, parameters) => const NotFoundScreen()),
       ],
@@ -294,6 +306,41 @@ pop: /first-screen
 pop: /
 ''',
       );
+    });
+
+    testWidgets('cache pages', (WidgetTester tester) async {
+      await tester.pumpWidget(createRouter(initialPath: () => '/non-const'));
+
+      final nonConstScreenA = find
+          .byType(NonConstScreen)
+          .evaluate()
+          .single
+          .widget as NonConstScreen;
+
+      tester.state<RouterState>(find.byType(Router)).push('/first-screen');
+      tester.state<RouterState>(find.byType(Router)).pop();
+      await tester.pumpAndSettle();
+
+      final nonConstScreenB = find
+          .byType(NonConstScreen)
+          .evaluate()
+          .single
+          .widget as NonConstScreen;
+
+      expect(
+          identityHashCode(nonConstScreenA), identityHashCode(nonConstScreenB));
+
+      tester.state<RouterState>(find.byType(Router)).push('/non-const');
+      await tester.pumpAndSettle();
+
+      final nonConstScreenC = find
+          .byType(NonConstScreen)
+          .evaluate()
+          .single
+          .widget as NonConstScreen;
+
+      expect(identityHashCode(nonConstScreenA),
+          isNot(identityHashCode(nonConstScreenC)));
     });
   });
 }
