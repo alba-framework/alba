@@ -168,8 +168,8 @@ class RouterState extends State<Router> with RestorationMixin {
   }
 
   /// Removes a route.
-  void removeRoute(String path) {
-    widget._albaRouter.removeRoute(path);
+  void remove(String path) {
+    widget._albaRouter.remove(path);
   }
 
   void _syncPages() {

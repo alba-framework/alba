@@ -264,9 +264,7 @@ void main() {
       tester.state<RouterState>(find.byType(Router)).push('/second-screen');
       await tester.pumpAndSettle();
 
-      tester
-          .state<RouterState>(find.byType(Router))
-          .removeRoute('/first-screen');
+      tester.state<RouterState>(find.byType(Router)).remove('/first-screen');
       await tester.pumpAndSettle();
 
       tester.state<RouterState>(find.byType(Router)).pop();
@@ -358,9 +356,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Remove isn't detected.
-      tester
-          .state<RouterState>(find.byType(Router))
-          .removeRoute('/first-screen');
+      tester.state<RouterState>(find.byType(Router)).remove('/first-screen');
       await tester.pumpAndSettle();
 
       tester.state<RouterState>(find.byType(Router)).pop();

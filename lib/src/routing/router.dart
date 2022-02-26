@@ -157,7 +157,7 @@ class AlbaRouter extends ChangeNotifier {
   }
 
   /// Removes a route by path.
-  void removeRoute(String path) {
+  void remove(String path) {
     var activeRoute = _findActiveRouteByPath(path);
     _remove(activeRoute!);
     notifyListeners();
