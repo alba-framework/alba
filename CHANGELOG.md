@@ -1,3 +1,8 @@
+## 0.0.12
+
+* Add `replace`, `removeUntilAndPush` router methods.
+* Rename `removePath` router method by `remove`.
+
 ## 0.0.11
 
 * Avoid pages rebuilding.
