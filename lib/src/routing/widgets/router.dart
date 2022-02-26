@@ -4,7 +4,6 @@ import 'package:rxdart/rxdart.dart';
 import '../../../routing.dart';
 import '../../framework/error.dart';
 import '../restoration.dart';
-import '../router.dart';
 
 /// A widget that manages routes and pages though the [Navigator].
 ///
