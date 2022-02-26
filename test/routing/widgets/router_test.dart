@@ -97,7 +97,7 @@ RouterRoot createRouter({
         RouteDefinition(
             '/first-screen', (context, parameters) => const FirstScreen()),
         RouteDefinition(
-            '/second-screen', (context, parameters) => const FirstScreen()),
+            '/second-screen', (context, parameters) => const SecondScreen()),
         RouteDefinition(
           '/pass-middleware',
           (context, parameters) => const FirstScreen(),
@@ -178,6 +178,47 @@ void main() {
       await tester.pumpWidget(createRouter());
 
       tester.state<RouterState>(find.byType(Router)).push('/abort-middleware');
+      await tester.pumpAndSettle();
+
+      expect(find.byType(HomeScreen), findsOneWidget);
+    });
+
+    testWidgets('replaces a route', (WidgetTester tester) async {
+      await tester.pumpWidget(createRouter());
+
+      tester.state<RouterState>(find.byType(Router)).push('/first-screen');
+      await tester.pumpAndSettle();
+
+      tester.state<RouterState>(find.byType(Router)).replace('/second-screen');
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SecondScreen), findsOneWidget);
+
+      tester.state<RouterState>(find.byType(Router)).pop();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(HomeScreen), findsOneWidget);
+    });
+
+    testWidgets('replaces a route with a middleware',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(createRouter());
+
+      tester
+          .state<RouterState>(find.byType(Router))
+          .replace('/pass-middleware');
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FirstScreen), findsOneWidget);
+    });
+
+    testWidgets('replaces a route with a middleware that abort the navigation',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(createRouter());
+
+      tester
+          .state<RouterState>(find.byType(Router))
+          .replace('/abort-middleware');
       await tester.pumpAndSettle();
 
       expect(find.byType(HomeScreen), findsOneWidget);
@@ -290,7 +331,14 @@ void main() {
       tester.state<RouterState>(find.byType(Router)).push('/second-screen');
       await tester.pumpAndSettle();
 
-      tester.state<RouterState>(find.byType(Router)).pop();
+      // Replace is detected as a push event.
+      tester.state<RouterState>(find.byType(Router)).replace('/first-screen');
+      await tester.pumpAndSettle();
+
+      // Remove isn't detected.
+      tester
+          .state<RouterState>(find.byType(Router))
+          .removeRoute('/first-screen');
       await tester.pumpAndSettle();
 
       tester.state<RouterState>(find.byType(Router)).pop();
@@ -302,6 +350,7 @@ void main() {
 push: /
 push: /first-screen
 push: /second-screen
+push: /first-screen
 pop: /first-screen
 pop: /
 ''',

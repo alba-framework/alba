@@ -98,6 +98,23 @@ class AlbaRouter extends ChangeNotifier {
     );
   }
 
+  /// Replace the current route by a new one by path.
+  ///
+  /// [id] is used to match listeners.
+  ///
+  /// Process route middlewares before replace.
+  void replace(String path, String? id) {
+    var routeDefinition = _findRouteDefinition(path);
+
+    _proccessMiddlewares(
+      routeDefinition,
+      (RouteDefinition routeDefinition) {
+        _replace(ActiveRoute(routeDefinition, path, _nextRouteIndex, id: id));
+        notifyListeners();
+      },
+    );
+  }
+
   /// Pops the top-most route.
   void pop<T extends Object?>([T? result]) {
     var activeRoute = activeRoutes.isEmpty ? null : activeRoutes.last;
@@ -179,6 +196,17 @@ class AlbaRouter extends ChangeNotifier {
         ?.addPostFrameCallback((_) => _notifyPush(activeRoute));
   }
 
+  void _replace(ActiveRoute? activeRoute) {
+    assert(null != activeRoute);
+    assert(activeRoutes.isNotEmpty);
+
+    final oldRoute = activeRoutes.removeLast();
+    activeRoutes.add(activeRoute!);
+
+    WidgetsBinding.instance
+        ?.addPostFrameCallback((_) => _notifyReplace(activeRoute, oldRoute));
+  }
+
   void _pop<T extends Object?>(ActiveRoute? activeRoute, T? result) {
     assert(null != activeRoute);
 
@@ -207,6 +235,11 @@ class AlbaRouter extends ChangeNotifier {
   /// Notifies a pop event.
   void _notifyPop<T extends Object?>(ActiveRoute activeRoute, T result) {
     _routerEventsController.sink.add(PopEvent(activeRoute, result));
+  }
+
+  /// Notifies a replace event.
+  void _notifyReplace(ActiveRoute activeRoute, ActiveRoute oldRoute) {
+    _routerEventsController.sink.add(ReplaceEvent(activeRoute, oldRoute));
   }
 
   /// Restores pages.
@@ -248,4 +281,13 @@ class PopEvent<T extends Object?> extends RouterEvent {
 class PushEvent extends RouterEvent {
   /// Creates a [PushEvent].
   PushEvent(ActiveRoute activeRoute) : super(activeRoute);
+}
+
+/// A router push event.
+class ReplaceEvent extends RouterEvent {
+  /// Old page.
+  final ActiveRoute oldRoute;
+
+  /// Creates a [ReplaceEvent].
+  ReplaceEvent(ActiveRoute activeRoute, this.oldRoute) : super(activeRoute);
 }

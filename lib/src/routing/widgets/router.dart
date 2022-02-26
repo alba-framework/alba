@@ -19,6 +19,9 @@ class Router extends StatefulWidget {
   final GlobalKey<NavigatorState>? _navigatorKey;
 
   /// A list of observers for this [Router].
+  ///
+  /// [NavigatorObserver.didRemove] and [NavigatorObserver.didReplace]
+  /// are not fired.
   final List<NavigatorObserver> Function()? _observers;
 
   /// Creates a [Router].
@@ -138,6 +141,12 @@ class RouterState extends State<Router> with RestorationMixin {
   /// Removes all and pushes a new route.
   void removeAllAndPush(String path, {String? id}) {
     widget._albaRouter.removeAllAndPush(path, id);
+    widget._notifyDelegate();
+  }
+
+  /// Replace the current route by a new one.
+  void replace(String path, {String? id}) {
+    widget._albaRouter.replace(path, id);
     widget._notifyDelegate();
   }
 
