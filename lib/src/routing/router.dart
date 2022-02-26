@@ -71,7 +71,7 @@ class AlbaRouter extends ChangeNotifier {
   void push(String path, String? id) {
     var routeDefinition = _findRouteDefinition(path);
 
-    _proccessMiddlewares(
+    _processMiddlewares(
       routeDefinition,
       (RouteDefinition routeDefinition) {
         _push(ActiveRoute(routeDefinition, path, _nextRouteIndex, id: id));
@@ -88,7 +88,7 @@ class AlbaRouter extends ChangeNotifier {
   void removeAllAndPush(String path, String? id) {
     var routeDefinition = _findRouteDefinition(path);
 
-    _proccessMiddlewares(
+    _processMiddlewares(
       routeDefinition,
       (RouteDefinition routeDefinition) {
         activeRoutes = [];
@@ -110,7 +110,7 @@ class AlbaRouter extends ChangeNotifier {
   ) {
     var routeDefinition = _findRouteDefinition(path);
 
-    _proccessMiddlewares(
+    _processMiddlewares(
       routeDefinition,
       (RouteDefinition routeDefinition) {
         for (var index = activeRoutes.length - 1;
@@ -133,7 +133,7 @@ class AlbaRouter extends ChangeNotifier {
   void replace(String path, String? id) {
     var routeDefinition = _findRouteDefinition(path);
 
-    _proccessMiddlewares(
+    _processMiddlewares(
       routeDefinition,
       (RouteDefinition routeDefinition) {
         _replace(ActiveRoute(routeDefinition, path, _nextRouteIndex, id: id));
@@ -203,7 +203,7 @@ class AlbaRouter extends ChangeNotifier {
     return null;
   }
 
-  void _proccessMiddlewares(
+  void _processMiddlewares(
     RouteDefinition routeDefinition,
     void Function(RouteDefinition routeDefinition) then,
   ) {
