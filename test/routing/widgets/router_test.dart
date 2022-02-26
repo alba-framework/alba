@@ -309,6 +309,28 @@ void main() {
       expect(find.byType(HomeScreen), findsOneWidget);
     });
 
+    testWidgets('removes until and push a new one',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(createRouter());
+
+      tester.state<RouterState>(find.byType(Router)).push('/first-screen');
+      await tester.pumpAndSettle();
+
+      tester.state<RouterState>(find.byType(Router)).push('/second-screen');
+      await tester.pumpAndSettle();
+
+      tester.state<RouterState>(find.byType(Router)).removeUntilAndPush(
+          (activeRoute) => activeRoute.path == '/', '/second-screen');
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SecondScreen), findsOneWidget);
+
+      tester.state<RouterState>(find.byType(Router)).pop();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(HomeScreen), findsOneWidget);
+    });
+
     testWidgets('gets the current path', (WidgetTester tester) async {
       await tester.pumpWidget(createRouter());
 

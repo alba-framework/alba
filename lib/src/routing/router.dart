@@ -98,6 +98,33 @@ class AlbaRouter extends ChangeNotifier {
     );
   }
 
+  /// Removes all the previous routes until the [predicate] returns true.
+  ///
+  /// [id] is used to match listeners.
+  ///
+  /// Process route middlewares before remove.
+  void removeUntilAndPush(
+    bool Function(ActiveRoute activeRoute) predicate,
+    String path,
+    String? id,
+  ) {
+    var routeDefinition = _findRouteDefinition(path);
+
+    _proccessMiddlewares(
+      routeDefinition,
+      (RouteDefinition routeDefinition) {
+        for (var index = activeRoutes.length - 1;
+            index >= 0 && !predicate(activeRoutes[index]);
+            index--) {
+          activeRoutes.removeAt(index);
+        }
+
+        _push(ActiveRoute(routeDefinition, path, _nextRouteIndex, id: id));
+        notifyListeners();
+      },
+    );
+  }
+
   /// Replace the current route by a new one by path.
   ///
   /// [id] is used to match listeners.

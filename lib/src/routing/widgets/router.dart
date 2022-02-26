@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../../routing.dart';
 import '../../framework/error.dart';
 import '../restoration.dart';
 import '../router.dart';
@@ -141,6 +142,16 @@ class RouterState extends State<Router> with RestorationMixin {
   /// Removes all and pushes a new route.
   void removeAllAndPush(String path, {String? id}) {
     widget._albaRouter.removeAllAndPush(path, id);
+    widget._notifyDelegate();
+  }
+
+  /// Removes all the previous routes until the [predicate] returns true.
+  void removeUntilAndPush(
+    bool Function(ActiveRoute activeRoute) predicate,
+    String path, {
+    String? id,
+  }) {
+    widget._albaRouter.removeUntilAndPush(predicate, path, id);
     widget._notifyDelegate();
   }
 
