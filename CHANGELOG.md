@@ -1,3 +1,7 @@
+## 0.0.13
+
+* Allow service locator replacement (reassignment) on tests.
+
 ## 0.0.12
 
 * Add `replace`, `removeUntilAndPush` router methods.
