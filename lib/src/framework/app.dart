@@ -94,6 +94,7 @@ class App {
   @visibleForTesting
   static void setTesting() {
     _isTesting = true;
+    ServiceLocator.instance.allowReassignment = true;
   }
 
   /// Define a closure to be run on boot when test mode is enabled.
@@ -109,6 +110,7 @@ class App {
   static Future<void> clear() async {
     _instance = null;
     _isTesting = false;
+    ServiceLocator.instance.allowReassignment = false;
     _bootTesting = null;
     await ServiceLocator.instance.reset();
   }
