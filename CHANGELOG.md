@@ -1,3 +1,7 @@
+## 0.0.14
+
+* Add `isTesting` App getter.
+
 ## 0.0.13
 
 * Allow service locator replacement (reassignment) on tests.
