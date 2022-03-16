@@ -145,5 +145,11 @@ void main() {
 
       expect(app.router, isA<RouterState>());
     });
+
+    test('get isTesting', () {
+      var app = App.create(widget: Container());
+
+      expect(app.isTesting, true);
+    });
   });
 }

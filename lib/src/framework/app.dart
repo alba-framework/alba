@@ -88,6 +88,9 @@ class App {
     return _instance!;
   }
 
+  /// Return true if app is in testing mode.
+  bool get isTesting => _isTesting;
+
   /// Set testing mode.
   ///
   /// It is useful for testing.
