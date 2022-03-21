@@ -161,8 +161,10 @@ class RouterState extends State<Router> with RestorationMixin {
   }
 
   /// Pops the current route.
-  void pop<T extends Object?>([T? result]) {
-    widget._albaRouter.pop(result);
+  void pop<T extends Object?>([T? result]) async {
+    await widget._navigatorKey!.currentState!.maybePop(result);
+
+    // widget._albaRouter.pop(result);
     widget._notifyDelegate();
   }
 
