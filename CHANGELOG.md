@@ -1,3 +1,7 @@
+## 0.0.15
+
+* A temporary workaround for consulting if pop should be done.
+
 ## 0.0.14
 
 * Add `isTesting` App getter.
