@@ -1,9 +1,7 @@
 import 'package:alba/framework.dart';
-import 'package:alba/routing.dart';
 import 'package:alba/storage.dart';
 
-import 'package:{{projectName}}/app/my_app.dart';
-import 'package:{{projectName}}/routes.dart';
+import 'app/my_app.dart';
 
 class ServiceLocatorProvider implements AppProvider {
   @override
@@ -16,9 +14,6 @@ void main() {
       StorageProvider(),
       ServiceLocatorProvider(),
     ],
-    routerRootConfiguration: RouterRootConfiguration(
-      routeDefinitions: routes,
-    ),
     widget: const MyApp(),
   ).run();
 }

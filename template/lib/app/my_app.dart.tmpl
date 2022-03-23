@@ -1,15 +1,22 @@
-import 'package:alba/framework.dart';
+import 'package:alba/routing.dart';
 import 'package:flutter/material.dart';
+
+import 'routes.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      restorationScopeId: 'app',
-      routerDelegate: app().pageRouterDelegate!,
-      routeInformationParser: app().pageRouteInformationParser!,
+    return RouterBuilder(
+      routeDefinitions: routes,
+      builder: (routerDelegate, routeInformationParser) {
+        return MaterialApp.router(
+          restorationScopeId: 'app',
+          routerDelegate: routerDelegate,
+          routeInformationParser: routeInformationParser,
+        );
+      },
     );
   }
 }
