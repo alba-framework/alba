@@ -1,3 +1,7 @@
+## 0.0.16
+
+* Simplify and improve the router.
+
 ## 0.0.15
 
 * A temporary workaround for consulting if pop should be done.
