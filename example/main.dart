@@ -34,8 +34,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return RouterBuilder(
       routeDefinitions: routes,
-      builder: (AlbaRouterDelegate routerDelegate,
-          AlbaRouteInformationParser routeInformationParser) {
+      builder: (routerDelegate, routeInformationParser) {
         return MaterialApp.router(
           restorationScopeId: 'app',
           routerDelegate: routerDelegate,
