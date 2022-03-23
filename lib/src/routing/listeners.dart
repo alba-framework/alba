@@ -2,26 +2,36 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart' hide Router;
 
-import '../../../routing.dart';
+import 'router.dart';
 
 /// A push event callback.
-typedef PushEventCallback = void Function(ActiveRoute activeRoute);
+typedef PushEventCallback = void Function(PageWrapper pageWrapper);
 
 /// A pop event callback.
 ///
 /// The type argument `T` is the page's result type.
-typedef PopEventCallback<T> = void Function(ActiveRoute activeRoute, T? result);
+typedef PopEventCallback<T extends Object?> = void Function(
+    PageWrapper pageWrapper, T? result);
+
+/// A pop event callback.
+///
+/// The type argument `T` is the page's result type.
+typedef ReplaceEventCallback<T extends Object?> = void Function(
+    PageWrapper pageWrapper, PageWrapper oldPageWrapper);
 
 /// A listener for router events.
 ///
 /// The type argument `T` is the page's result type, as used by [PopEventCallback].
 /// The type `void` may be used if the route does not return a value.
-abstract class RouterListener<T> extends StatefulWidget {
+abstract class RouterListener<T extends Object?> extends StatefulWidget {
   /// The callback which is called when a page is pushed.
   final PushEventCallback? onPush;
 
   /// The callback which is called when a page is popped.
   final PopEventCallback<T>? onPop;
+
+  /// The callback which is called when a page is replaced.
+  final ReplaceEventCallback? onReplace;
 
   /// The widget below this widget in the tree.
   final Widget? child;
@@ -30,6 +40,7 @@ abstract class RouterListener<T> extends StatefulWidget {
   const RouterListener({
     this.onPush,
     this.onPop,
+    this.onReplace,
     this.child,
     Key? key,
   }) : super(key: key);
@@ -38,7 +49,7 @@ abstract class RouterListener<T> extends StatefulWidget {
   _RouterListenerState<T> createState() => _RouterListenerState<T>();
 
   /// Test if the page matches.
-  bool isMatch(ActiveRoute activeRoute);
+  bool isMatch(PageWrapper pageWrapper);
 }
 
 class _RouterListenerState<T> extends State<RouterListener<T>> {
@@ -58,14 +69,23 @@ class _RouterListenerState<T> extends State<RouterListener<T>> {
   }
 
   void _notifyEvent(RouterEvent event) {
-    if (!widget.isMatch(event.activeRoute)) {
+    if (!widget.isMatch(event.pageWrapper)) {
       return;
     }
 
     if (event is PopEvent) {
-      widget.onPop?.call(event.activeRoute, event.result as T);
-    } else if (event is PushEvent) {
-      widget.onPush?.call(event.activeRoute);
+      widget.onPop?.call(event.pageWrapper, event.result as T);
+      return;
+    }
+
+    if (event is PushEvent) {
+      widget.onPush?.call(event.pageWrapper);
+      return;
+    }
+
+    if (event is ReplaceEvent) {
+      widget.onReplace?.call(event.pageWrapper, event.oldPageWrapper);
+      return;
     }
   }
 
@@ -90,7 +110,7 @@ class PathRouterListener<T> extends RouterListener<T> {
         super(onPush: onPush, onPop: onPop, child: child, key: key);
 
   @override
-  bool isMatch(ActiveRoute activeRoute) => _path == activeRoute.path;
+  bool isMatch(PageWrapper pageWrapper) => _path == pageWrapper.path;
 }
 
 /// A router listener for a specific page id.
@@ -108,7 +128,7 @@ class IdRouterListener<T> extends RouterListener<T> {
         super(onPush: onPush, onPop: onPop, child: child, key: key);
 
   @override
-  bool isMatch(ActiveRoute activeRoute) => _id == activeRoute.id;
+  bool isMatch(PageWrapper pageWrapper) => _id == pageWrapper.id;
 }
 
 /// A router listener for several page paths or page ids.
@@ -129,7 +149,7 @@ class MultipleRouterListener<T> extends RouterListener<T> {
         super(onPush: onPush, onPop: onPop, child: child, key: key);
 
   @override
-  bool isMatch(ActiveRoute activeRoute) =>
-      (null != _paths && _paths!.any((path) => path == activeRoute.path)) ||
-      (null != _ids && _ids!.any((id) => id == activeRoute.id));
+  bool isMatch(PageWrapper pageWrapper) =>
+      (null != _paths && _paths!.any((path) => path == pageWrapper.path)) ||
+      (null != _ids && _ids!.any((id) => id == pageWrapper.id));
 }

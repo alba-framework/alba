@@ -1,7 +1,7 @@
 import 'package:alba/framework.dart';
-import 'package:alba/routing.dart';
+import 'package:alba/src/routing/router.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Router;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers.dart';
@@ -25,8 +25,17 @@ class AppWithRouterTest extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      routerDelegate: app().pageRouterDelegate!,
-      routeInformationParser: app().pageRouteInformationParser!,
+      routerDelegate: AlbaRouterDelegate(
+        routerState: RouterState(
+          navigatorKey: app().navigatorKey,
+          notFoundPath: '/not-found',
+          routeDefinitions: [
+            RouteDefinition('/', (context, parameters) => Container()),
+            RouteDefinition('/not-found', (context, parameters) => Container()),
+          ],
+        ),
+      ),
+      routeInformationParser: AlbaRouteInformationParser(),
     );
   }
 }
@@ -95,35 +104,34 @@ void main() {
       await app.run();
 
       expect(find.byType(RootRestorationScope), findsNothing);
-      expect(find.byType(RouterRoot), findsNothing);
       expect(find.byKey(key), findsOneWidget);
-      expect(app.pageRouterDelegate, null);
-      expect(app.pageRouteInformationParser, null);
     });
 
     testWidgets('runs app with the router', (WidgetTester tester) async {
       var key = UniqueKey();
       var app = App.create(
-        routerRootConfiguration: RouterRootConfiguration(routeDefinitions: [
-          RouteDefinition('/', (context, parameters) => Container()),
-          RouteDefinition('/not-found', (context, parameters) => Container()),
-        ]),
         widget: AppWithRouterTest(key: key),
       );
       await app.run();
 
-      expect(find.byType(RouterRoot), findsOneWidget);
+      expect(find.byType(Router), findsOneWidget);
       expect(find.byKey(key), findsOneWidget);
-      expect(app.pageRouterDelegate, isNot(null));
-      expect(app.pageRouteInformationParser, isNot(null));
+    });
+
+    testWidgets('gets navigator key', (WidgetTester tester) async {
+      var navigatorKey = GlobalKey<NavigatorState>();
+      var app = App.create(
+        navigatorKey: navigatorKey,
+        widget: const AppWithRouterTest(),
+      );
+      await app.run();
+      await tester.pumpAndSettle();
+
+      expect(app.navigatorKey, navigatorKey);
     });
 
     testWidgets('gets navigator context', (WidgetTester tester) async {
       var app = App.create(
-        routerRootConfiguration: RouterRootConfiguration(routeDefinitions: [
-          RouteDefinition('/', (context, parameters) => Container()),
-          RouteDefinition('/not-found', (context, parameters) => Container()),
-        ]),
         widget: const AppWithRouterTest(),
       );
       await app.run();
@@ -134,16 +142,12 @@ void main() {
 
     testWidgets('gets router', (WidgetTester tester) async {
       var app = App.create(
-        routerRootConfiguration: RouterRootConfiguration(routeDefinitions: [
-          RouteDefinition('/', (context, parameters) => Container()),
-          RouteDefinition('/not-found', (context, parameters) => Container()),
-        ]),
         widget: const AppWithRouterTest(),
       );
       await app.run();
       await tester.pumpAndSettle();
 
-      expect(app.router, isA<RouterState>());
+      expect(app.router, isA<RouterWidgetState>());
     });
 
     test('get isTesting', () {

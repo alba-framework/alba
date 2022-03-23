@@ -7,9 +7,6 @@ void main() {
     appProviders: [
       ServiceLocatorProvider(),
     ],
-    routerRootConfiguration: RouterRootConfiguration(
-      routeDefinitions: routes,
-    ),
     widget: const MyApp(),
   ).run();
 }
@@ -35,10 +32,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      restorationScopeId: 'app',
-      routerDelegate: app().pageRouterDelegate!,
-      routeInformationParser: app().pageRouteInformationParser!,
+    return RouterBuilder(
+      routeDefinitions: routes,
+      builder: (AlbaRouterDelegate routerDelegate,
+          AlbaRouteInformationParser routeInformationParser) {
+        return MaterialApp.router(
+          restorationScopeId: 'app',
+          routerDelegate: routerDelegate,
+          routeInformationParser: routeInformationParser,
+        );
+      },
     );
   }
 }
