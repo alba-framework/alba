@@ -128,7 +128,7 @@ class App {
       navigatorContext != null ? Router.of(navigatorContext!) : null;
 
   /// Runs the app.
-  Future<void> run() async {
+  Future<void> run([void Function(Widget widget)? appRunner]) async {
     await _boot();
 
     // Not run in a guarded zone when testing.
@@ -137,7 +137,13 @@ class App {
       return;
     }
 
-    ErrorHandler(errorListeners).run(() => runApp(widget));
+    ErrorHandler(errorListeners).run(() {
+      if (appRunner != null) {
+        appRunner(widget);
+        return;
+      }
+      runApp(widget);
+    });
   }
 
   /// Boots the app and the providers.

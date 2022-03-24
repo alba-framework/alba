@@ -107,6 +107,16 @@ void main() {
       expect(find.byKey(key), findsOneWidget);
     });
 
+    testWidgets('runs app with custom runner', (WidgetTester tester) async {
+      var key = UniqueKey();
+      var app = App.create(
+        widget: Container(key: key),
+      );
+      await app.run((widget) => runApp(widget));
+
+      expect(find.byKey(key), findsOneWidget);
+    });
+
     testWidgets('runs app with the router', (WidgetTester tester) async {
       var key = UniqueKey();
       var app = App.create(
