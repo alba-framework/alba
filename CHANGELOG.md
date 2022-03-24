@@ -1,3 +1,7 @@
+## 0.0.18
+
+* Fix double pop notification.
+
 ## 0.0.17
 
 * Add name property to routes.
