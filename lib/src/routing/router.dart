@@ -476,9 +476,6 @@ class Router extends StatefulWidget {
   final GlobalKey<NavigatorState> _navigatorKey;
 
   /// A list of observers for this [Router].
-  ///
-  /// [NavigatorObserver.didRemove] and [NavigatorObserver.didReplace]
-  /// are not fired.
   final List<NavigatorObserver> Function() _observers;
 
   /// Creates a [Router].
@@ -618,6 +615,10 @@ Page defaultPageBuilder(
       key: ValueKey(pageWrapper.key),
       restorationId: pageWrapper.restorationId,
       name: pageWrapper.name,
+      arguments: {
+        'path': pageWrapper.path,
+        'parameters': pageWrapper.parameters,
+      },
       child: widget,
     );
   }
@@ -626,6 +627,10 @@ Page defaultPageBuilder(
     key: ValueKey(pageWrapper.key),
     restorationId: pageWrapper.restorationId,
     name: pageWrapper.name,
+    arguments: {
+      'path': pageWrapper.path,
+      'parameters': pageWrapper.parameters,
+    },
     child: widget,
   );
 }
@@ -635,6 +640,9 @@ Page defaultPageBuilder(
 class RouteDefinition {
   /// The path.
   final String _path;
+
+  /// The name.
+  final String? name;
 
   /// The widget builder.
   final RouteWidgetBuilder widgetBuilder;
@@ -657,6 +665,7 @@ class RouteDefinition {
   RouteDefinition(
     String path,
     this.widgetBuilder, {
+    this.name,
     this.pageBuilder = defaultPageBuilder,
     List<Middleware> Function()? middlewares,
   })  : _path = _addTrailingSlash(path),
@@ -701,8 +710,11 @@ class PageWrapper {
   /// The page index
   final int index;
 
-  /// The developer-defined id.
+  /// The page id.
   final String? id;
+
+  /// The page name.
+  final String? name;
 
   /// The built page.
   Page<dynamic>? _page;
@@ -713,16 +725,14 @@ class PageWrapper {
     this.path,
     this.index, {
     this.id,
-  }) : _routeDefinition = routeDefinition;
+  })  : _routeDefinition = routeDefinition,
+        name = routeDefinition.name;
 
   /// The page restoration id.
   String get key => 'pi+$index';
 
   /// The page restoration id.
   String get restorationId => key;
-
-  /// The page name.
-  String get name => '$key+$path';
 
   /// Extracts the parameters for the current path.
   Map<String, String> get parameters => _routeDefinition._parameters(path);

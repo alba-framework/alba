@@ -78,21 +78,28 @@ class LogObserver extends NavigatorObserver {
 
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    log += 'push: ${_extractPath(route)}\n';
+    log += 'push: ${route.settings.name} - ${_extractPath(route)}\n';
   }
 
   @override
   void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
-    log += 'replace: ${_extractPath(newRoute!)}\n';
+    log += 'replace: ${newRoute?.settings.name} - ${_extractPath(newRoute!)}\n';
   }
 
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    log += 'pop: ${_extractPath(previousRoute!)}\n';
+    log += 'pop: ${route.settings.name} - ${_extractPath(route)}\n';
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    log += 'remove: ${route.settings.name} - ${_extractPath(route)}\n';
   }
 
   String? _extractPath(Route<dynamic> route) {
-    return route.settings.name?.replaceFirst(RegExp('^[^/]+'), '');
+    final arguments =
+        Map<String, dynamic>.from(route.settings.arguments as Map);
+    return arguments['path'];
   }
 }
 
@@ -112,17 +119,22 @@ void main() {
             RouteDefinition(
               '/',
               (context, parameters) => const HomeScreen(),
+              name: 'Home Screen',
             ),
             RouteDefinition(
               '/first-screen',
               (context, parameters) => const FirstScreen(),
+              name: 'First Screen',
             ),
-            RouteDefinition('/second-screen',
-                (context, parameters) => const SecondScreen()),
             RouteDefinition(
-                '/with-param/:message',
-                (context, parameters) =>
-                    WihParamScreen(parameters['message']!)),
+              '/second-screen',
+              (context, parameters) => const SecondScreen(),
+              name: 'Second Screen',
+            ),
+            RouteDefinition(
+              '/with-param/:message',
+              (context, parameters) => WihParamScreen(parameters['message']!),
+            ),
             RouteDefinition(
               '/pass-middleware',
               (context, parameters) => const FirstScreen(),
@@ -134,9 +146,13 @@ void main() {
               middlewares: () => [AbortMiddleware()],
             ),
             RouteDefinition(
-                '/non-const', (context, parameters) => NonConstScreen()),
+              '/non-const',
+              (context, parameters) => NonConstScreen(),
+            ),
             RouteDefinition(
-                '/not-found', (context, parameters) => const NotFoundScreen()),
+              '/not-found',
+              (context, parameters) => const NotFoundScreen(),
+            ),
           ],
         ),
         observers: observers,
@@ -470,20 +486,31 @@ void main() {
     tester.state<RouterWidgetState>(find.byType(Router)).push('/first-screen');
     await tester.pumpAndSettle();
 
+    await tester.state<RouterWidgetState>(find.byType(Router)).pop();
+    await tester.pumpAndSettle();
+
     tester.state<RouterWidgetState>(find.byType(Router)).push('/second-screen');
     await tester.pumpAndSettle();
 
-    // Replace is detected as a push event.
+    tester.state<RouterWidgetState>(find.byType(Router)).remove('/');
+    await tester.pumpAndSettle();
+
+    // `replace` is detected as a push and remove event.
     tester
         .state<RouterWidgetState>(find.byType(Router))
         .replace('/first-screen');
     await tester.pumpAndSettle();
 
-    // Remove isn't detected.
-    // tester.state<Router2State>(find.byType(Router2)).remove('/first-screen');
-    // await tester.pumpAndSettle();
+    tester.state<RouterWidgetState>(find.byType(Router)).push('/second-screen');
+    await tester.pumpAndSettle();
 
-    await tester.state<RouterWidgetState>(find.byType(Router)).pop();
+    // `removeAllAndPush` is detected as a push and several remove events.
+    tester
+        .state<RouterWidgetState>(find.byType(Router))
+        .removeAllAndPush('/first-screen');
+    await tester.pumpAndSettle();
+
+    tester.state<RouterWidgetState>(find.byType(Router)).push('/second-screen');
     await tester.pumpAndSettle();
 
     await tester.state<RouterWidgetState>(find.byType(Router)).pop();
@@ -492,12 +519,19 @@ void main() {
     expect(
       logObserver.log,
       '''
-push: /
-push: /first-screen
-push: /second-screen
-push: /first-screen
-pop: /first-screen
-pop: /
+push: Home Screen - /
+push: First Screen - /first-screen
+pop: First Screen - /first-screen
+push: Second Screen - /second-screen
+remove: Home Screen - /
+push: First Screen - /first-screen
+remove: Second Screen - /second-screen
+push: Second Screen - /second-screen
+push: First Screen - /first-screen
+remove: Second Screen - /second-screen
+remove: First Screen - /first-screen
+push: Second Screen - /second-screen
+pop: Second Screen - /second-screen
 ''',
     );
   });
