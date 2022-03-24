@@ -1,3 +1,7 @@
+## 0.0.19
+
+* Add the ability to set a custom app runner.
+
 ## 0.0.18
 
 * Fix double pop notification.
