@@ -1,3 +1,7 @@
+## 0.0.17
+
+* Add name property to routes.
+
 ## 0.0.16
 
 * Simplify and improve the router.
