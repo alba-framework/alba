@@ -244,16 +244,7 @@ class RouterState with ChangeNotifier {
 
   /// Pops the top-most route.
   Future<bool> pop<T extends Object?>([T? result]) async {
-    final page = _pageStack.last;
-    final popped = await _navigatorState.maybePop(result);
-
-    if (popped) {
-      // _pageStack.removeLast();
-      notifyListeners();
-      _notifyPop(page, result);
-    }
-
-    return popped;
+    return _navigatorState.maybePop(result);
   }
 
   /// Replace the current route by a new one by path.
