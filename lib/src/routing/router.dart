@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show DialogRoute, MaterialPage;
-import 'package:flutter/widgets.dart';
 import 'package:path_to_regexp/path_to_regexp.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -754,6 +753,7 @@ class PageWrapper {
   /// The page restoration id.
   String get restorationId => key;
 
+  /// The page if it's already built.
   Page? get pageOrNull => _page;
 
   /// Extracts the parameters for the current path.
