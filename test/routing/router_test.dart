@@ -535,4 +535,20 @@ pop: Second Screen - /second-screen
 ''',
     );
   });
+
+  testWidgets('find a widget', (WidgetTester tester) async {
+    await tester.pumpWidget(createApp());
+
+    tester.state<RouterWidgetState>(find.byType(Router)).push('/first-screen');
+    await tester.pumpAndSettle();
+
+    tester.state<RouterWidgetState>(find.byType(Router)).push('/second-screen');
+    await tester.pumpAndSettle();
+
+    final firstScreen = tester
+        .state<RouterWidgetState>(find.byType(Router))
+        .findWidget<FirstScreen>();
+
+    expect(firstScreen, isA<FirstScreen>());
+  });
 }

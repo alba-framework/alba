@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show DialogRoute, MaterialPage;
 import 'package:flutter/widgets.dart';
@@ -350,6 +351,28 @@ class RouterState with ChangeNotifier {
     _routerEventsController.sink.add(ReplaceEvent(pageWrapper, oldPageWrapper));
   }
 
+  /// Returns the [Widget] of the nearest [Page] the is an instance
+  /// of the given type `T`.
+  T? findWidget<T extends Widget>() {
+    for (var pageWrapper in _pageStack.reversed) {
+      final page = pageWrapper.pageOrNull;
+
+      if (page is MaterialPage && page.child is T) {
+        return page.child as T;
+      }
+
+      if (page is CupertinoPage && page.child is T) {
+        return page.child as T;
+      }
+
+      if (page is DialogPage && page.child is T) {
+        return page.child as T;
+      }
+    }
+
+    return null;
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -569,6 +592,12 @@ class RouterWidgetState extends State<Router> {
     widget._state.removeUntilAndPush(predicate, path, id: id);
   }
 
+  /// Returns the [Widget] of the nearest [Page] that is an instance
+  /// of the given type `T`.
+  T? findWidget<T extends Widget>() {
+    return widget._state.findWidget<T>();
+  }
+
   @override
   Widget build(BuildContext context) {
     final pages = widget._state._buildPages(context);
@@ -724,6 +753,8 @@ class PageWrapper {
 
   /// The page restoration id.
   String get restorationId => key;
+
+  Page? get pageOrNull => _page;
 
   /// Extracts the parameters for the current path.
   Map<String, String> get parameters => _routeDefinition._parameters(path);
