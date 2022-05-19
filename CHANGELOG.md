@@ -1,3 +1,7 @@
+## 0.0.20
+
+* Add `findWidget` router method.
+
 ## 0.0.19
 
 * Add the ability to set a custom app runner.
