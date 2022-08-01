@@ -247,6 +247,22 @@ class RouterState with ChangeNotifier {
     return _navigatorState.maybePop(result);
   }
 
+  /// Pops all the previous routes until the [predicate] returns true.
+  Future<bool> popUntil(
+      bool Function(PageWrapper pageWrapper) predicate) async {
+    for (var index = _pageStack.length - 1;
+        index >= 0 && !predicate(_pageStack[index]);
+        index--) {
+      final result = await _navigatorState.maybePop();
+
+      if (!result) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   /// Replace the current route by a new one by path.
   ///
   /// [id] is used to match listeners.
@@ -553,6 +569,11 @@ class RouterWidgetState extends State<Router> {
   /// Pops the top-most route.
   Future<bool> pop<T extends Object?>([T? result]) {
     return widget._state.pop(result);
+  }
+
+  /// Pops the top-most route.
+  Future<bool> popUntil(bool Function(PageWrapper pageWrapper) predicate) {
+    return widget._state.popUntil(predicate);
   }
 
   /// Replace the current route by a new one by path.
