@@ -571,7 +571,7 @@ class RouterWidgetState extends State<Router> {
     return widget._state.pop(result);
   }
 
-  /// Pops the top-most route.
+  /// Pops all the previous routes until the [predicate] returns true.
   Future<bool> popUntil(bool Function(PageWrapper pageWrapper) predicate) {
     return widget._state.popUntil(predicate);
   }
