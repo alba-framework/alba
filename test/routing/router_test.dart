@@ -281,7 +281,7 @@ void main() {
     tester.state<RouterWidgetState>(find.byType(Router)).push('/first-screen');
     await tester.pumpAndSettle();
 
-    await tester
+    tester
         .state<RouterWidgetState>(find.byType(Router))
         .popUntil((activeRoute) => activeRoute.path == '/');
     await tester.pumpAndSettle();
