@@ -30,8 +30,9 @@ class AppWithRouterTest extends StatelessWidget {
           navigatorKey: app().navigatorKey,
           notFoundPath: '/not-found',
           routeDefinitions: [
-            RouteDefinition('/', (context, parameters) => Container()),
-            RouteDefinition('/not-found', (context, parameters) => Container()),
+            RouteDefinition('/', (context, parameters, query) => Container()),
+            RouteDefinition(
+                '/not-found', (context, parameters, query) => Container()),
           ],
         ),
       ),

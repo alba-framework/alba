@@ -16,6 +16,7 @@ typedef Middleware = PipelineHandler<RouteDefinition>;
 typedef RouteWidgetBuilder = Widget Function(
   BuildContext context,
   Map<String, String> parameters,
+  Map<String, String> query,
 );
 
 /// A signature for a function that creates a router [Page].
@@ -641,7 +642,7 @@ Page defaultPageBuilder(
   BuildContext context,
   PageWrapper pageWrapper,
 ) {
-  Widget widget = pageWrapper.buildWidget(context, pageWrapper.parameters);
+  Widget widget = pageWrapper.buildWidget(context);
 
   if (widget is RouteDialogBehavior) {
     return DialogPage(
@@ -717,7 +718,8 @@ class RouteDefinition {
 
   /// Tests if a path match.
   bool match(String path) {
-    return _pathRegex.hasMatch(_addTrailingSlash(path));
+    final preparedPath = _addTrailingSlash(Uri.parse(path).path);
+    return _pathRegex.hasMatch(preparedPath);
   }
 
   /// Extracts the parameters for a path.
@@ -749,6 +751,9 @@ class PageWrapper {
   /// The page name.
   final String? name;
 
+  /// The path uri
+  final Uri _uri;
+
   /// The built page.
   Page<dynamic>? _page;
 
@@ -758,7 +763,8 @@ class PageWrapper {
     this.path,
     this.index, {
     this.id,
-  })  : _routeDefinition = routeDefinition,
+  })  : _uri = Uri.parse(path),
+        _routeDefinition = routeDefinition,
         name = routeDefinition.name;
 
   /// The page restoration id.
@@ -770,12 +776,15 @@ class PageWrapper {
   /// The page if it's already built.
   Page? get pageOrNull => _page;
 
-  /// Extracts the parameters for the current path.
+  /// Extracts the parameters from the current path.
   Map<String, String> get parameters => _routeDefinition._parameters(path);
 
+  /// Extracts the query from the current path.
+  Map<String, String> get query => _uri.queryParameters;
+
   /// Build the widget.
-  Widget buildWidget(BuildContext context, Map<String, String> parameters) =>
-      _routeDefinition.widgetBuilder(context, parameters);
+  Widget buildWidget(BuildContext context) =>
+      _routeDefinition.widgetBuilder(context, parameters, query);
 
   /// Build the page.
   Page<dynamic> getOrBuildPage(BuildContext context) {

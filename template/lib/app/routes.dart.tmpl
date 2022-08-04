@@ -6,10 +6,10 @@ import 'screens/not_found_screen.dart';
 var routes = [
   RouteDefinition(
     '/not-found',
-    (context, parameters) => const NotFoundScreen(),
+    (context, parameters, query) => const NotFoundScreen(),
   ),
   RouteDefinition(
     '/',
-    (context, parameters) => const HomeScreen(),
+    (context, parameters, query) => const HomeScreen(),
   ),
 ];

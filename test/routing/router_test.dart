@@ -40,6 +40,30 @@ class WihParamScreen extends StatelessWidget {
   }
 }
 
+class WithQueryScreen extends StatelessWidget {
+  final String message;
+  final String emptyParam;
+  final String? optionalParam;
+
+  const WithQueryScreen(
+    this.message,
+    this.emptyParam,
+    this.optionalParam, {
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(message),
+        Text(emptyParam.isEmpty ? 'is empty' : emptyParam),
+        Text(optionalParam == null ? 'is null' : optionalParam!),
+      ],
+    );
+  }
+}
+
 class NonConstScreen extends StatelessWidget {
   // ignore: prefer_const_constructors_in_immutables
   NonConstScreen({Key? key}) : super(key: key);
@@ -118,40 +142,49 @@ void main() {
           routeDefinitions: [
             RouteDefinition(
               '/',
-              (context, parameters) => const HomeScreen(),
+              (context, parameters, query) => const HomeScreen(),
               name: 'Home Screen',
             ),
             RouteDefinition(
               '/first-screen',
-              (context, parameters) => const FirstScreen(),
+              (context, parameters, query) => const FirstScreen(),
               name: 'First Screen',
             ),
             RouteDefinition(
               '/second-screen',
-              (context, parameters) => const SecondScreen(),
+              (context, parameters, query) => const SecondScreen(),
               name: 'Second Screen',
             ),
             RouteDefinition(
               '/with-param/:message',
-              (context, parameters) => WihParamScreen(parameters['message']!),
+              (context, parameters, query) =>
+                  WihParamScreen(parameters['message']!),
+            ),
+            RouteDefinition(
+              '/with-query',
+              (context, parameters, query) => WithQueryScreen(
+                query['message']!,
+                query['empty-param']!,
+                query['optional-param'],
+              ),
             ),
             RouteDefinition(
               '/pass-middleware',
-              (context, parameters) => const FirstScreen(),
+              (context, parameters, query) => const FirstScreen(),
               middlewares: () => [PassMiddleware()],
             ),
             RouteDefinition(
               '/abort-middleware',
-              (context, parameters) => const FirstScreen(),
+              (context, parameters, query) => const FirstScreen(),
               middlewares: () => [AbortMiddleware()],
             ),
             RouteDefinition(
               '/non-const',
-              (context, parameters) => NonConstScreen(),
+              (context, parameters, query) => NonConstScreen(),
             ),
             RouteDefinition(
               '/not-found',
-              (context, parameters) => const NotFoundScreen(),
+              (context, parameters, query) => const NotFoundScreen(),
             ),
           ],
         ),
@@ -499,6 +532,19 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('my-message'), findsOneWidget);
+  });
+
+  testWidgets('route with query', (WidgetTester tester) async {
+    await tester.pumpWidget(createApp());
+
+    tester
+        .state<RouterWidgetState>(find.byType(Router))
+        .push('/with-query?message=my-message&empty-param');
+    await tester.pumpAndSettle();
+
+    expect(find.text('my-message'), findsOneWidget);
+    expect(find.text('is empty'), findsOneWidget);
+    expect(find.text('is null'), findsOneWidget);
   });
 
   testWidgets('observe route changes', (WidgetTester tester) async {

@@ -13,13 +13,18 @@ void main() {
         routeDefinitions: [
           RouteDefinition(
             '/',
-            (context, parameters) => homeScreenBuilder(context),
+            (context, parameters, query) => homeScreenBuilder(context),
           ),
-          RouteDefinition('/screen-1', (context, parameters) => Container()),
-          RouteDefinition('/screen-2', (context, parameters) => Container()),
-          RouteDefinition('/screen-3', (context, parameters) => Container()),
-          RouteDefinition('/screen-4', (context, parameters) => Container()),
-          RouteDefinition('/not-found', (context, parameters) => Container()),
+          RouteDefinition(
+              '/screen-1', (context, parameters, query) => Container()),
+          RouteDefinition(
+              '/screen-2', (context, parameters, query) => Container()),
+          RouteDefinition(
+              '/screen-3', (context, parameters, query) => Container()),
+          RouteDefinition(
+              '/screen-4', (context, parameters, query) => Container()),
+          RouteDefinition(
+              '/not-found', (context, parameters, query) => Container()),
         ],
       )),
       routeInformationParser: AlbaRouteInformationParser(),
