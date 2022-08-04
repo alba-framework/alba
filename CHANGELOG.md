@@ -1,7 +1,11 @@
+## 0.0.23
+
+* Add support for query strings.
+
 ## 0.0.22
 
 * Change how to work `popUntil` method.
-* 
+
 ## 0.0.21
 
 * Add `popUntil` router method.
