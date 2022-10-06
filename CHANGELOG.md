@@ -1,3 +1,7 @@
+## 0.0.25
+
+* Add the ability to set a custom Router key.
+
 ## 0.0.24
 
 * Fix current location when initial path is defined.
