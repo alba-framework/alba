@@ -434,7 +434,7 @@ class AlbaRouterDelegate extends RouterDelegate<RouterConfiguration>
   Future<void> setInitialRoutePath(RouterConfiguration configuration) {
     var path = configuration._routesInfo.first.path;
 
-    if (_initialPath != null) {
+    if (_initialPath != null && path == Navigator.defaultRouteName) {
       path = _initialPath!();
     }
 

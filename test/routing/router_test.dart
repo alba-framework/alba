@@ -132,6 +132,7 @@ void main() {
     String Function()? initialPath,
     GlobalKey<NavigatorState>? navigatorKey,
     List<NavigatorObserver> Function()? observers,
+    RouteInformationProvider? routeInformationProvider,
   }) {
     return MaterialApp.router(
       restorationScopeId: 'app',
@@ -192,6 +193,7 @@ void main() {
         initialPath: initialPath,
       ),
       routeInformationParser: AlbaRouteInformationParser(),
+      routeInformationProvider: routeInformationProvider,
     );
   }
 
@@ -212,6 +214,19 @@ void main() {
     await tester.pumpWidget(createApp(initialPath: () => '/first-screen'));
 
     expect(find.byType(FirstScreen), findsOneWidget);
+  });
+
+  testWidgets('initial custom route respects current location',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(createApp(
+      initialPath: () => '/first-screen',
+      routeInformationProvider: PlatformRouteInformationProvider(
+        initialRouteInformation:
+            const RouteInformation(location: '/second-screen'),
+      ),
+    ));
+
+    expect(find.byType(SecondScreen), findsOneWidget);
   });
 
   testWidgets('pushes routes', (WidgetTester tester) async {
