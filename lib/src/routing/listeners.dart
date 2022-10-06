@@ -46,13 +46,14 @@ abstract class RouterListener<T extends Object?> extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _RouterListenerState<T> createState() => _RouterListenerState<T>();
+  RouterListenerState<T> createState() => RouterListenerState<T>();
 
   /// Test if the page matches.
   bool isMatch(PageWrapper pageWrapper);
 }
 
-class _RouterListenerState<T> extends State<RouterListener<T>> {
+/// A state for a [RouterListener] widget.
+class RouterListenerState<T> extends State<RouterListener<T>> {
   late final StreamSubscription<RouterEvent> _routerEventStreamSubscription;
 
   @override

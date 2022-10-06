@@ -529,17 +529,17 @@ class Router extends StatefulWidget {
   ///
   /// This method can be expensive (it walks the element tree).
   static RouterWidgetState of(BuildContext context) {
-    var _routerState = context.findRootAncestorStateOfType<RouterWidgetState>();
+    var routerState = context.findRootAncestorStateOfType<RouterWidgetState>();
 
     assert(() {
-      if (_routerState == null) {
+      if (routerState == null) {
         throw AlbaError(
             'Router operation requested with a context that does not include a Router.\n');
       }
       return true;
     }());
 
-    return _routerState!;
+    return routerState!;
   }
 }
 
