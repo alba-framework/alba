@@ -1,4 +1,9 @@
-## 0.0.23
+## 0.0.24
+
+* Fix current location when initial path is defined.
+* Upgrade dependencies.
+
+* ## 0.0.23
 
 * Add support for query strings.
 
