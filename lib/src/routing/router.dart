@@ -397,6 +397,9 @@ class AlbaRouterDelegate extends RouterDelegate<RouterConfiguration>
   /// The key used for [Navigator].
   final GlobalKey<NavigatorState> _navigatorKey;
 
+  /// The key used for [Router].
+  final GlobalKey<RouterWidgetState>? _routerKey;
+
   final List<NavigatorObserver> Function()? _observers;
 
   /// The initial path when there isn't any page.
@@ -405,10 +408,12 @@ class AlbaRouterDelegate extends RouterDelegate<RouterConfiguration>
   /// Creates a [AlbaRouterDelegate].
   AlbaRouterDelegate({
     required RouterState routerState,
+    GlobalKey<RouterWidgetState>? routerKey,
     String Function()? initialPath,
     List<NavigatorObserver> Function()? observers,
   })  : _routerState = routerState,
         _navigatorKey = routerState._navigatorKey,
+        _routerKey = routerKey,
         _initialPath = initialPath,
         _observers = observers {
     _routerState.addListener(() {
@@ -419,6 +424,7 @@ class AlbaRouterDelegate extends RouterDelegate<RouterConfiguration>
   @override
   Widget build(BuildContext context) {
     return Router(
+      key: _routerKey,
       state: _routerState,
       navigatorKey: _navigatorKey,
       observers: _observers ?? () => [],
@@ -840,6 +846,9 @@ class RouterBuilder extends StatefulWidget {
   /// The key used for [Navigator].
   final GlobalKey<NavigatorState> navigatorKey;
 
+  /// The key used for [Router].
+  final GlobalKey<RouterWidgetState>? routerKey;
+
   /// The path when a page is not found.
   final String notFoundPath;
 
@@ -854,6 +863,7 @@ class RouterBuilder extends StatefulWidget {
     required this.builder,
     required this.routeDefinitions,
     GlobalKey<NavigatorState>? navigatorKey,
+    this.routerKey,
     this.notFoundPath = '/not-found',
     this.initialPath,
     this.observers,
@@ -884,6 +894,7 @@ class _RouterBuilderState extends State<RouterBuilder> {
     return widget.builder(
       AlbaRouterDelegate(
         routerState: _routerState,
+        routerKey: widget.routerKey,
         initialPath: widget.initialPath,
         observers: widget.observers,
       ),

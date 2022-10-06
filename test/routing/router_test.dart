@@ -131,12 +131,14 @@ void main() {
   Widget createApp({
     String Function()? initialPath,
     GlobalKey<NavigatorState>? navigatorKey,
+    GlobalKey<RouterWidgetState>? routerKey,
     List<NavigatorObserver> Function()? observers,
     RouteInformationProvider? routeInformationProvider,
   }) {
     return MaterialApp.router(
       restorationScopeId: 'app',
       routerDelegate: AlbaRouterDelegate(
+        routerKey: routerKey,
         routerState: RouterState(
           navigatorKey: navigatorKey ?? GlobalKey<NavigatorState>(),
           notFoundPath: '/not-found',
@@ -202,6 +204,13 @@ void main() {
     await tester.pumpWidget(createApp(navigatorKey: navigatorKey));
 
     expect(navigatorKey.currentState, isA<NavigatorState>());
+  });
+
+  testWidgets('custom router key', (WidgetTester tester) async {
+    var routerKey = GlobalKey<RouterWidgetState>();
+    await tester.pumpWidget(createApp(routerKey: routerKey));
+
+    expect(routerKey.currentState, isA<RouterWidgetState>());
   });
 
   testWidgets('shows the initial route', (WidgetTester tester) async {
