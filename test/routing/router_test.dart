@@ -64,6 +64,33 @@ class WithQueryScreen extends StatelessWidget {
   }
 }
 
+class WithParamAndQueryScreen extends StatelessWidget {
+  final String paramMessage;
+  final String queryMessage;
+  final String emptyParam;
+  final String? optionalParam;
+
+  const WithParamAndQueryScreen(
+    this.paramMessage,
+    this.queryMessage,
+    this.emptyParam,
+    this.optionalParam, {
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(paramMessage),
+        Text(queryMessage),
+        Text(emptyParam.isEmpty ? 'is empty' : emptyParam),
+        Text(optionalParam == null ? 'is null' : optionalParam!),
+      ],
+    );
+  }
+}
+
 class NonConstScreen extends StatelessWidget {
   // ignore: prefer_const_constructors_in_immutables
   NonConstScreen({Key? key}) : super(key: key);
@@ -167,6 +194,15 @@ void main() {
               '/with-query',
               (context, parameters, query) => WithQueryScreen(
                 query['message']!,
+                query['empty-param']!,
+                query['optional-param'],
+              ),
+            ),
+            RouteDefinition(
+              '/with-param-and-query/:paramMessage',
+              (context, parameters, query) => WithParamAndQueryScreen(
+                parameters['paramMessage']!,
+                query['my-query-message']!,
                 query['empty-param']!,
                 query['optional-param'],
               ),
@@ -589,6 +625,19 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('my-message'), findsOneWidget);
+    expect(find.text('is empty'), findsOneWidget);
+    expect(find.text('is null'), findsOneWidget);
+  });
+
+  testWidgets('route with param and query', (WidgetTester tester) async {
+    await tester.pumpWidget(createApp());
+
+    tester.state<RouterWidgetState>(find.byType(Router)).push(
+        '/with-param-and-query/my-param-message?my-query-message=my-query-message&empty-param');
+    await tester.pumpAndSettle();
+
+    expect(find.text('my-param-message'), findsOneWidget);
+    expect(find.text('my-query-message'), findsOneWidget);
     expect(find.text('is empty'), findsOneWidget);
     expect(find.text('is null'), findsOneWidget);
   });

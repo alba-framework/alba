@@ -730,13 +730,14 @@ class RouteDefinition {
 
   /// Extracts the parameters for a path.
   Map<String, String> _parameters(String path) {
-    final match = _pathRegex.matchAsPrefix(_addTrailingSlash(path));
+    final match =
+        _pathRegex.matchAsPrefix(_addTrailingSlash(Uri.parse(path).path));
 
     if (null == match) {
       return {};
     }
 
-    return extract(_parametersNames, match); // => {'id': '12'}
+    return extract(_parametersNames, match);
   }
 }
 
