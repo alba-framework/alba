@@ -251,7 +251,7 @@ class RouterState with ChangeNotifier {
   /// Pops all the previous routes until the [predicate] returns true.
   void popUntil(bool Function(PageWrapper pageWrapper) predicate) async {
     for (var index = _pageStack.length - 1;
-        index >= 0 && !predicate(_pageStack[index]);
+        index > 0 && !predicate(_pageStack[index]);
         index--) {
       _navigatorState.pop();
     }

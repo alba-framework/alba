@@ -348,6 +348,28 @@ void main() {
     expect(find.byType(SecondScreen), findsNothing);
   });
 
+  testWidgets('pops routes until the last screen', (WidgetTester tester) async {
+    await tester.pumpWidget(createApp());
+
+    tester.state<RouterWidgetState>(find.byType(Router)).push('/first-screen');
+    await tester.pumpAndSettle();
+
+    tester.state<RouterWidgetState>(find.byType(Router)).push('/second-screen');
+    await tester.pumpAndSettle();
+
+    tester.state<RouterWidgetState>(find.byType(Router)).push('/first-screen');
+    await tester.pumpAndSettle();
+
+    tester
+        .state<RouterWidgetState>(find.byType(Router))
+        .popUntil((activeRoute) => false);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(HomeScreen), findsOneWidget);
+    expect(find.byType(FirstScreen), findsNothing);
+    expect(find.byType(SecondScreen), findsNothing);
+  });
+
   testWidgets('pushes an undefined route', (WidgetTester tester) async {
     await tester.pumpWidget(createApp());
 
