@@ -1,3 +1,8 @@
+## 0.0.26
+
+* Fix `popUntil` when the predicate doesn't match any route.
+* Fix routes with a trailing parameter and a query string.
+
 ## 0.0.25
 
 * Add the ability to set a custom Router key.
