@@ -1,3 +1,6 @@
+## 0.0.27
+- Fix router browser navigation
+
 ## 0.0.26
 
 * Fix `popUntil` when the predicate doesn't match any route.
