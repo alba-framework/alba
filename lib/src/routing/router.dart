@@ -223,6 +223,37 @@ class RouterState with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Sync pages with [RouterConfiguration].
+  void _sync(RouterConfiguration routerConfiguration) {
+    // remove extra pages
+    if (_pageStack.length > routerConfiguration._routesInfo.length) {
+      _pageStack.removeRange(
+          routerConfiguration._routesInfo.length, _pageStack.length);
+    }
+
+    for (var i = 0; i < routerConfiguration._routesInfo.length; i++) {
+      var routeInfo = routerConfiguration._routesInfo[i];
+
+      if (_pageStack.length > i && _pageStack[i].path == routeInfo.path) {
+        // page matches so continue
+        continue;
+      }
+
+      if (_pageStack.length > i) {
+        // remove current and next pages
+        _pageStack.removeRange(i, _pageStack.length);
+      }
+
+      // add the current page
+      final routeDefinition = _findRouteDefinition(routeInfo.path);
+      final page =
+          PageWrapper(routeDefinition, routeInfo.path, _nextRouteIndex);
+      _pageStack.add(page);
+    }
+
+    notifyListeners();
+  }
+
   /// Pushes a new page by path.
   ///
   /// [id] is used to match listeners.
@@ -450,10 +481,10 @@ class AlbaRouterDelegate extends RouterDelegate<RouterConfiguration>
   }
 
   @override
-  Future<void> setNewRoutePath(RouterConfiguration configuration) {
-    _routerState.push(configuration._routesInfo.first.path);
+  SynchronousFuture<void> setNewRoutePath(RouterConfiguration configuration) {
+    _routerState._sync(configuration);
 
-    return Future.value();
+    return SynchronousFuture(null);
   }
 
   @override
